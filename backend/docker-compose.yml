@@ -1,0 +1,77 @@
+version: '3.9'
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8000:8000"
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./auth-service/.env
+    depends_on:
+      - user-service
+      - mail-service
+
+  mail-service:
+    build: ./mail-service
+    ports:
+      - "5002:5002"
+    env_file:
+      - ./mail-service/.env
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "5004:5004"
+    env_file:
+      - ./user-service/.env
+    depends_on:
+      - db-users
+
+  topic-service:
+    build: ./topic-service
+    ports:
+      - "5005:5005"
+    env_file:
+      - ./topic-service/.env
+    depends_on:
+      - db-topics
+
+  test-service:
+    build: ./test-service
+    ports:
+      - "5006:5006"
+    env_file:
+      - ./test-service/.env
+    depends_on:
+      - db-tests
+
+  db-users:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: user_db
+    ports:
+      - "3308:3306"
+
+  db-topics:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: topic_db
+    ports:
+      - "3309:3306"
+
+  db-tests:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test_db
+    ports:
+      - "3310:3306"
