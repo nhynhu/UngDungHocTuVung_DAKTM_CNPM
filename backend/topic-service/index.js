@@ -4,8 +4,8 @@ const cors = require('cors');
 const sequelize = require('./models');
 const Topic = require('./models/Topic');
 const Word = require('./models/Word');
-const topicRoutes = require('./routes/topicRoutes');
-const wordRoutes = require('./routes/wordRoutes');
+const topicRoutes = require('./routes/topicRoute');
+const wordRoutes = require('./routes/wordRoute');
 
 const app = express();
 app.use(cors());

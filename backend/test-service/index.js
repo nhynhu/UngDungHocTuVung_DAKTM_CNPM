@@ -5,9 +5,8 @@ const sequelize = require('./models');
 const Question = require('./models/Question');
 const Result = require('./models/Result');
 const Test = require('./models/Test');
-const questionRoutes = require('./routes/questionRoutes');
-const resultRoutes = require('./routes/resultRoutes');
-const testRoutes = require('./routes/testRoutes');
+const questionRoutes = require('./routes/questionRoute');
+const resultRoutes = require('./routes/resultRoute');
 
 const app = express();
 app.use(cors());

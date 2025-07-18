@@ -1,22 +1,11 @@
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
+const bcrypt = require('bcryptjs');
 const axiosInstance = axios.create();
 
-exports.googleLogin = async (req, res) => {
-    const { token } = req.body;
-    try {
-        const response = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
-        const user = { email: response.data.email, name: response.data.name };
-        const jwtToken = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token: jwtToken });
-    } catch (err) {
-        res.status(401).json({ error: 'Invalid token' });
-    }
-};
-
 exports.register = async (req, res) => {
-    const { username, fullname, email, password } = req.body;
-    const token = jwt.sign({ username, fullname, email, password }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    const { username, password, fullname, email } = req.body;
+    const token = jwt.sign({ username, password, fullname, email }, process.env.JWT_SECRET, { expiresIn: '15m' });
     const verifyLink = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
     try {
         await axiosInstance.post('http://mail-service:5002/send', {
@@ -34,15 +23,35 @@ exports.verify = async (req, res) => {
     const { token } = req.body;
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET);
+        const hashedPassword = await bcrypt.hash(payload.password, 10);
         await axiosInstance.post('http://user-service:5004/users', {
             username: payload.username,
+            password: hashedPassword,
             fullname: payload.fullname,
             email: payload.email,
-            password: payload.password,
             isVerified: true
         });
         res.json({ message: 'Account verified and created' });
     } catch (err) {
         res.status(400).json({ error: 'Invalid or expired token' });
+    }
+};
+exports.login = async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const response = await axiosInstance.get(`http://user-service:5004/users/by-username/${username}`);
+        const user = response.data;
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        if (!user.isVerified) return res.status(403).json({ error: 'Account not verified' });
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(401).json({ error: 'Invalid password' });
+        const token = jwt.sign(
+            { id: user.id },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+        res.json({ token });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
