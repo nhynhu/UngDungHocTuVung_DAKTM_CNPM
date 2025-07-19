@@ -28,7 +28,6 @@ const HomeMenu = () => {
                     <MenuItem component={<NavLink to="/" className="nav-link" />}>Home</MenuItem>
                     <MenuItem component={<NavLink to="/topics" className="nav-link" />}>Learn</MenuItem>
                     <MenuItem component={<NavLink to="/tests" className="nav-link" />}>Test</MenuItem>
-                    <MenuItem component={<NavLink to="/notifications" className="nav-link" />}>Notification</MenuItem>
                 </Menu>
             </Sidebar>
         </div>

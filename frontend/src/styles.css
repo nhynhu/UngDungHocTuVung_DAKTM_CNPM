@@ -1,0 +1,285 @@
+/* ===== INDEX.CSS ===== */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* ===== APP.CSS ===== */
+.app-container {
+    .header-container {
+        .btn-login.btn.btn-primary {
+            border-radius: 5px;
+            margin-right: 20px;
+            padding: 0 16px;
+            border: 1px solid;
+            background-color: #FFDDDD;
+            color: #000;
+        }
+        .btn-signup.btn.btn-primary {
+            border-radius: 5px;
+            padding: 0 16px;
+            border: 1px solid;
+            background-color: #000;
+            color: #FFDDDD;
+        }
+
+        .bg-body-tertiary {
+            z-index: 10;
+            background-color: #FFDDDD !important;
+
+            .nav-link.active {
+                color: #e402a4 !important;
+            }
+        }
+    }
+}
+
+/* ===== HOME CONTENT.CSS ===== */
+.home-content-main {
+  padding: 32px 16px;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #f5b6c6;
+  width: fit-content;
+  padding-bottom: 2px;
+  color: #e402a4;
+}
+
+.introduce-box {
+  display: flex;
+  align-items: flex-end;
+  background: #f7f7f7;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.introduce-text {
+  flex: 1;
+  font-size: 1rem;
+  color: #333;
+}
+
+.mascot-img {
+  width: 90px;
+  height: auto;
+  margin-left: 16px;
+}
+
+/* ===== FLASHCARD.CSS ===== */
+.flashcard {
+  width: 500px;
+  height: 300px;
+  perspective: 1000px;
+  margin: 20px auto; /* căn giữa ngang */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.card-back {
+  background-color: #f8f9fa;
+  transform: rotateY(180deg);
+}
+
+/* ===== TOPIC.CSS (LEARN & TEST) ===== */
+.card-equal {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-equal .card-img-top {
+  height: 160px;
+  object-fit: cover;
+}
+
+.card-equal .card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* ===== TEST QUIZ STYLES ===== */
+.test-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.test-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.question-area {
+  flex: 2;
+}
+
+.test-sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.question-text {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.option-item {
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.option-item .form-check-input {
+  margin-top: 0.25rem;
+}
+
+.navigation-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: space-between;
+}
+
+.timer-card .timer {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #e402a4;
+  margin: 0;
+}
+
+.question-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.question-btn {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.question-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.question-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.question-btn.answered {
+  background-color: #28a745;
+  color: white;
+  border-color: #28a745;
+}
+
+.question-btn.answered.active {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.test-mascot {
+  width: 120px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.mascot-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.result-card {
+  max-width: 500px;
+  margin: 50px auto;
+}
+
+.result-card h2 {
+  color: #e402a4;
+  margin-bottom: 20px;
+}
+
+.result-card h3 {
+  color: #28a745;
+  margin-bottom: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .test-layout {
+    flex-direction: column;
+  }
+  
+  .question-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .navigation-buttons {
+    flex-direction: column;
+  }
+  
+  .navigation-buttons button {
+    margin-bottom: 10px;
+  }
+}

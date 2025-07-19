@@ -4,7 +4,6 @@ import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { NavLink } from 'react-router-dom';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 const Header = () => {
     return (
@@ -19,11 +18,7 @@ const Header = () => {
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="navbarScroll" />
                 <Navbar.Collapse id="navbarScroll">
-                    <Nav style={{ marginLeft: '100px' }}>
-                        <NavLink to="/" className="nav-link">User</NavLink>
-                        <NavLink to="/admins" className="nav-link">Admin</NavLink>
-                    </Nav>
-                    <Nav style={{ marginLeft: '50px' }}>
+                    <Nav style={{ marginLeft: '150px' }}>
                         <Form className="d-flex" style={{ alignItems: 'center', gap: '8px' }}>
                             <Form.Control
                                 type="search"
@@ -40,7 +35,6 @@ const Header = () => {
                     <Nav className="ms-auto">
                         <NavDropdown title="Setting" id="navbarScrollingDropdown">
                             <NavDropdown.Item href="#action3">Profile</NavDropdown.Item>
-                            <NavDropdown.Item href="#action4">Log in</NavDropdown.Item>
                             <NavDropdown.Divider />
                             <NavDropdown.Item href="#action5">Log out</NavDropdown.Item>
                         </NavDropdown>

@@ -1,6 +1,5 @@
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import './HomeContent.css';
 
 const HomeContent = () => {
   return (

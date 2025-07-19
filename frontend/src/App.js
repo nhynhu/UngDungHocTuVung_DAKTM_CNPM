@@ -1,4 +1,3 @@
-import './App.css';
 import Header from './component/header/Header';
 import { Outlet } from 'react-router-dom';
 import HomeMenu from './component/home/HomeMenu';
