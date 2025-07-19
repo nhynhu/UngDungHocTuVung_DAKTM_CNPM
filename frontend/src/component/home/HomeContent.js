@@ -1,21 +1,46 @@
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-
+import Carousel from 'react-bootstrap/Carousel'; 
 const HomeContent = () => {
   return (
     <div className="home-content-main">
       <div className="section">
-        <div className="section-title">Recent</div>
-        <Card style={{ width: '18rem', borderRadius: '16px', overflow: 'hidden', marginTop: '12px' }}>
-          <Card.Img variant="top" src="https://images.pexels.com/photos/45170/kittens-cat-cat-puppy-cute-45170.jpeg" />
-          <Card.Body>
-            <Card.Title>Card Title</Card.Title>
-            <Card.Text>
-              Some quick example text to build on the card title and make up the bulk of the card's content.
-            </Card.Text>
-            <Button variant="primary">Go somewhere</Button>
-          </Card.Body>
-        </Card>
+        <Carousel interval={3000} controls={true} indicators={true}>
+      <Carousel.Item>
+        <img
+          className="d-block w-100"
+          src="https://via.placeholder.com/800x400/007bff/ffffff?text=Learn+English+Vocabulary"
+          alt="First slide"
+          style={{ height: '300px', objectFit: 'cover' }}
+        />
+        <Carousel.Caption>
+          <h3>Welcome to English Learning</h3>
+          <p>Start your journey to master English vocabulary with our interactive app.</p>
+        </Carousel.Caption>
+      </Carousel.Item>
+      <Carousel.Item interval={3000}>
+        <img
+          className="d-block w-100"
+          src="https://via.placeholder.com/800x400/28a745/ffffff?text=Practice+Daily"
+          alt="Second slide"
+          style={{ height: '300px', objectFit: 'cover' }}
+        />
+        <Carousel.Caption>
+          <h3>Practice Every Day</h3>
+          <p>Consistent practice is the key to improving your English vocabulary.</p>
+        </Carousel.Caption>
+      </Carousel.Item>
+      <Carousel.Item>
+        <img
+          className="d-block w-100"
+          src="https://via.placeholder.com/800x400/dc3545/ffffff?text=Test+Your+Skills"
+          alt="Third slide"
+          style={{ height: '300px', objectFit: 'cover' }}
+        />
+        <Carousel.Caption>
+          <h3>Test Your Knowledge</h3>
+          <p>Take quizzes and tests to measure your progress and improve your skills.</p>
+        </Carousel.Caption>
+      </Carousel.Item>
+    </Carousel>
       </div>
       <div className="section">
         <div className="section-title">Introduce</div>

@@ -10,6 +10,7 @@ const HomeMenu = () => {
                         backgroundColor: '#ffdddd',
                         minHeight: '100vh',
                         width: '160px',
+                        
                     },
                 }}
             >

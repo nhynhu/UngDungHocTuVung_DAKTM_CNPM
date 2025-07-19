@@ -10,6 +10,7 @@ import Topic from './component/learn/Topic';
 import Test from './component/test/Test'; 
 import Lesson from './component/learn/Lesson';
 import TestStart from './component/test/TestStart';
+import SearchPage from './component/search/SearchPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -22,6 +23,7 @@ root.render(
           <Route path="lessons" element={<Lesson />} />
           <Route path="tests" element={<Test />} />
           <Route path="dotests" element={<TestStart />} />
+          <Route path="search" element={<SearchPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
