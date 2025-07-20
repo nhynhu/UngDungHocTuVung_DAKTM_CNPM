@@ -11,7 +11,7 @@ const HomeContent = () => {
           alt="First slide"
           style={{ height: '300px', objectFit: 'cover' }}
         />
-        <Carousel.Caption>
+        <Carousel.Caption style={{color: '#ffffffff'}}>
           <h3>Welcome to English Learning</h3>
           <p>Start your journey to master English vocabulary with our interactive app.</p>
         </Carousel.Caption>

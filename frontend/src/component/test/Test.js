@@ -5,25 +5,25 @@ import TestCard from './TestCard';
 const cards = [
   {
     title: 'Test 1',
-    img: 'https://images.pexels.com/photos/45170/kittens-cat-cat-puppy-cute-45170.jpeg',
+    img: 'image/testchoose.jpg',
     text: 'Bài test từ vựng cơ bản',
     link: '/dotests', // Link riêng cho từng test
   },
   {
     title: 'Test 2',
-    img: 'https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg',
+    img: 'image/testchoose.jpg',
     text: 'Bài test từ vựng nâng cao',
     link: '/dotests', // Link khác
   },
   {
     title: 'Test 3',
-    img: 'https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg',
+    img: 'image/testchoose.jpg',
     text: 'Bài test ngữ pháp cơ bản',
     link: '/dotests',
   },
   {
     title: 'Test 4',
-    img: 'https://images.pexels.com/photos/416160/pexels-photo-416160.jpeg',
+    img: 'image/testchoose.jpg',
     text: 'Bài test tổng hợp',
     link: '/dotests',
   },
