@@ -26,9 +26,9 @@ const HomeMenu = () => {
                         }),
                     }}
                 >
-                    <MenuItem component={<NavLink to="/" className="nav-link" />}>Home</MenuItem>
-                    <MenuItem component={<NavLink to="/topics" className="nav-link" />}>Learn</MenuItem>
-                    <MenuItem component={<NavLink to="/tests" className="nav-link" />}>Test</MenuItem>
+                    <MenuItem icon={<img src="/image/iconhome.png" alt="Home" style={{ width: '32px'}} />} component={<NavLink to="/" className="nav-link" />}>Home</MenuItem>
+                    <MenuItem icon={<img src="/image/learn.png" alt="Home" style={{ width: '35px'}} />} component={<NavLink to="/topics" className="nav-link" />}>Learn</MenuItem>
+                    <MenuItem icon={<img src="/image/test.png" alt="Home" style={{ width: '32px'}} />}component={<NavLink to="/tests" className="nav-link" />}>Test</MenuItem>
                 </Menu>
             </Sidebar>
         </div>

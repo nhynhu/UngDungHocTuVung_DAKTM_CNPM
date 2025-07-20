@@ -13,7 +13,7 @@ const TopicCard = ({ title, img, text, link }) => (
         className="btn btn-primary"
         style={{ display: 'inline-block' }}
       >
-        Học ngay
+        Learn
       </NavLink>
     </Card.Body>
   </Card>

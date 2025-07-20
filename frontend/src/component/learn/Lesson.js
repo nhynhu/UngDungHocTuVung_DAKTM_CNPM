@@ -15,7 +15,7 @@ const Lesson = () => {
   const nextCard = () => setIndex(index < flashcards.length - 1 ? index + 1 : 0);
 
   return (
-    <div style={{ textAlign: 'center', marginTop: 32 }}>
+    <div style={{ textAlign: 'center', marginTop: 32,}}>
       <h1>Chủ đề</h1>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 220 }}>
         <Flashcard front={flashcards[index].front} back={flashcards[index].back} />

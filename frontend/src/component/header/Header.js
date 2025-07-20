@@ -5,8 +5,17 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import SearchBox from '../search/SearchBox';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import { useNavigate } from 'react-router-dom';
 const Header = () => {
+    const navigate = useNavigate();
+
+    const handleLoginClick = () => {
+        navigate('/logins');
+    };
+
+    const handleSignupClick = () => {
+        navigate('/signup');
+    };
     return (
         <Navbar expand="lg" className="bg-body-tertiary">
             <Container fluid>
@@ -36,9 +45,8 @@ const Header = () => {
                             <NavDropdown.Divider />
                             <NavDropdown.Item href="#action5">Log out</NavDropdown.Item>
                         </NavDropdown>
-                        <Button className='btn-login'>Log in</Button>
-                        <Button className='btn-signup'>Sign up</Button>
-                        
+                        <Button className='btn-login' onClick={handleLoginClick}>Log in</Button>
+                        <Button className='btn-signup' onClick={handleSignupClick}>Sign up</Button>
                     </Nav>    
                 </Navbar.Collapse>
             </Container>

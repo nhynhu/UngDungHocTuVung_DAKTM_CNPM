@@ -18,8 +18,10 @@ code {
     .header-container {
         .btn-login.btn.btn-primary {
             border-radius: 5px;
+            margin-top: 10px;
             margin-right: 20px;
             padding: 0 16px;
+            height: 42px;
             border: 1px solid;
             background-color: #FFDDDD;
             color: #000;
@@ -27,6 +29,8 @@ code {
         .btn-signup.btn.btn-primary {
             border-radius: 5px;
             padding: 0 16px;
+            margin-top: 10px;
+            height: 42px;
             border: 1px solid;
             background-color: #000;
             color: #FFDDDD;
@@ -418,4 +422,175 @@ code {
 .results-summary p {
   margin: 0;
   color: #495057;
+}
+/* trang login */
+/* Căn giữa toàn bộ form*/
+/* Toàn màn hình: căn giữa */
+.Loginscreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #fffafc;
+}
+
+/* Form login */
+.Loginscreen form {
+  background-color: #ffdddd;
+  padding: 48px 64px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  min-width: 600px;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Label cho input */
+.Loginscreen form label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Input */
+.Loginscreen form .form-control {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 16px;
+}
+
+/* Nút Log In */
+.login-button {
+  padding: 6px 20px;
+  font-size: 16px;
+  background-color: #FB6A9D !important;
+  color: white;
+  border: none !important;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.login-button:hover,
+.login-button:focus,
+.login-button:active {
+  background-color: #ff2e85 !important;
+  color: white;
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+
+/* Register link */
+.nav-link {
+  display: block;
+  margin-top: 16px;
+  color: #ff5ca2;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  text-align: center;
+}
+
+.nav-link:hover {
+  color: #ff2e85;
+}
+
+.logo-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 999;
+}
+
+.logo-container img {
+  width: 400px;   /* hoặc bất kỳ kích thước nào phù hợp */
+  height: auto;
+}
+
+/* trang register */
+.Signupscreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #fffafc;
+}
+
+/* Form signup */
+.Signupscreen form {
+  background-color: #ffdddd;
+  padding: 48px 64px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  min-width: 600px;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Label cho input */
+.Signupscreen form label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Input */
+.Signupscreen form .form-control {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 16px;
+}
+
+/* Nút Log In */
+.signup-button {
+  padding: 6px 20px;
+  font-size: 16px;
+  background-color: #FB6A9D !important;
+  color: white;
+  border: none !important;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.signup-button:hover,
+.signup-button:focus,
+.signup-button:active {
+  background-color: #ff2e85 !important;
+  color: white;
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+
+/* Register link */
+.nav-link {
+  display: block;
+  margin-top: 16px;
+  color: #ff5ca2;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  text-align: center;
+}
+
+.nav-link:hover {
+  color: #ff2e85;
+}
+
+.logo-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 999;
+}
+
+.logo-container img {
+  width: 400px;   /* hoặc bất kỳ kích thước nào phù hợp */
+  height: auto;
 }
