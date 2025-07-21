@@ -3,7 +3,7 @@ import { Sidebar, Menu, MenuItem,sidebarClasses } from 'react-pro-sidebar';
 import { NavLink } from 'react-router-dom';
 const HomeMenu = () => {
     return (
-        <div className="home-menu-container">
+        <div className="home-menu-container"style={{ minHeight: '100vh' }}>
             <Sidebar
                 rootStyles={{
                     [`.${sidebarClasses.container}`]: {

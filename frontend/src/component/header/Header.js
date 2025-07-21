@@ -6,6 +6,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import SearchBox from '../search/SearchBox';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 const Header = () => {
     const navigate = useNavigate();
 
@@ -41,7 +42,7 @@ const Header = () => {
                     </Nav>
                     <Nav className="ms-auto">
                         <NavDropdown title="Setting" id="navbarScrollingDropdown">
-                            <NavDropdown.Item href="#action3">Profile</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
                             <NavDropdown.Divider />
                             <NavDropdown.Item href="#action5">Log out</NavDropdown.Item>
                         </NavDropdown>

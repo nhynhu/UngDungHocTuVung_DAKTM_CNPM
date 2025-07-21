@@ -266,17 +266,25 @@ code {
   display: flex;
   gap: 20px;
   align-items: flex-start;
+  min-height: 600px;
+  display: flex;
 }
 
 .question-area {
   flex: 2;
-}
-
-.test-sidebar {
-  flex: 1;
+  min-height: 500px; /* hoặc lớn hơn nếu cần */
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  justify-content: space-between;
+}
+.question-area .card {
+  flex-grow: 1;
+}
+.test-sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 0 0 200px;
 }
 
 .question-text {
@@ -429,8 +437,6 @@ code {
 }
 
 /* trang login */
-/* Căn giữa toàn bộ form*/
-/* Toàn màn hình: căn giữa */
 .Loginscreen {
   display: flex;
   justify-content: center;
@@ -602,6 +608,7 @@ code {
   height: auto;
 }
 
+<<<<<<< HEAD
 /* ==================== LOGIN PAGE STYLES ==================== */
 .login-page {
   display: flex;
@@ -2232,4 +2239,55 @@ body:has(.signup-page) {
   margin: 0 !important;
   padding: 0 !important;
   overflow: hidden !important;
+=======
+
+
+/*PROFILE */
+.p-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Chiếm full chiều cao trang */
+  background-color: #ffffff;
+}
+
+/* Thẻ form chứa nội dung */
+.p-form {
+  background-color: #f5f0f0;
+  padding: 30px;
+  width: 300px;
+  border-radius: 8px;
+  position: relative;
+  text-align: left;
+}
+
+/* Tiêu đề tên + icon */
+.p-name {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.p-icon {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.p-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.p-text {
+  font-size: 15px;
+  margin: 6px 0;
+}
+
+/* Ảnh góc dưới */
+.p-img {
+  width: 80px;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+>>>>>>> 52f59facf8cdf788a990443461952dd81303f136
 }

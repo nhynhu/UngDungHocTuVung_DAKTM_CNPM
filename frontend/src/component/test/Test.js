@@ -1,7 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Alert, Spinner, Button } from 'react-bootstrap';
 import TestCard from './TestCard';
+<<<<<<< HEAD
 import ApiService from '../../services/api';
+=======
+
+const cards = [
+  {
+    title: 'Test 1',
+    img: 'image/testchoose.jpg',
+    text: 'Bài test từ vựng cơ bản',
+    link: '/dotests', // Link riêng cho từng test
+  },
+  {
+    title: 'Test 2',
+    img: 'image/testchoose.jpg',
+    text: 'Bài test từ vựng nâng cao',
+    link: '/dotests', // Link khác
+  },
+  {
+    title: 'Test 3',
+    img: 'image/testchoose.jpg',
+    text: 'Bài test ngữ pháp cơ bản',
+    link: '/dotests',
+  },
+  {
+    title: 'Test 4',
+    img: 'image/testchoose.jpg',
+    text: 'Bài test tổng hợp',
+    link: '/dotests',
+  },
+];
+>>>>>>> 52f59facf8cdf788a990443461952dd81303f136
 
 const Test = () => {
   const [tests, setTests] = useState([]);
