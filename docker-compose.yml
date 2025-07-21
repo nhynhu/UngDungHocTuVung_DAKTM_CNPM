@@ -121,13 +121,10 @@ services:
       MYSQL_ROOT_PASSWORD: "0000"
       MYSQL_ROOT_HOST: "%"
       MYSQL_DATABASE: test_db
-      MYSQL_USER: app_user          # <-- thêm user
-      MYSQL_PASSWORD: "apppassword" # <-- và password
     ports:
       - "3310:3306"
     volumes:
       - mysql_tests_data:/var/lib/mysql
-
 volumes:
   mysql_users_data:
   mysql_topics_data:

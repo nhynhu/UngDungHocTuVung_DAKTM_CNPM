@@ -1,37 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Alert, Spinner, Button } from 'react-bootstrap';
 import TestCard from './TestCard';
-<<<<<<< HEAD
 import ApiService from '../../services/api';
-=======
-
-const cards = [
-  {
-    title: 'Test 1',
-    img: 'image/testchoose.jpg',
-    text: 'Bài test từ vựng cơ bản',
-    link: '/dotests', // Link riêng cho từng test
-  },
-  {
-    title: 'Test 2',
-    img: 'image/testchoose.jpg',
-    text: 'Bài test từ vựng nâng cao',
-    link: '/dotests', // Link khác
-  },
-  {
-    title: 'Test 3',
-    img: 'image/testchoose.jpg',
-    text: 'Bài test ngữ pháp cơ bản',
-    link: '/dotests',
-  },
-  {
-    title: 'Test 4',
-    img: 'image/testchoose.jpg',
-    text: 'Bài test tổng hợp',
-    link: '/dotests',
-  },
-];
->>>>>>> 52f59facf8cdf788a990443461952dd81303f136
 
 const Test = () => {
   const [tests, setTests] = useState([]);
@@ -95,9 +65,9 @@ const Test = () => {
             <Col key={test.id} lg={4} md={6} sm={12} className="mb-4">
               <TestCard
                 title={test.title || test.name}
-                img={test.img}
-                text={test.text}
-                link={test.link}
+                img={test.img || 'image/testchoose.jpg'}
+                text={test.text || test.description}
+                link={`/test-start?testId=${test.id}`}
               />
             </Col>
           ))

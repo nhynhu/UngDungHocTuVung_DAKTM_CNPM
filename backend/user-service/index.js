@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { sequelize } = require('./models');
-const userRoutes = require('./routes/userRoutes'); // SỬA: userRoute thay vì userRoutes
+const userRoutes = require('./routes/userRoutes'); // ⬅️ SỬA: userRoutes không phải userRoute
 
 const app = express();
 const PORT = process.env.PORT || 5004;
@@ -26,7 +26,7 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Database connection với retry logic
+// Database connection
 const connectDB = async () => {
     for (let i = 0; i < 10; i++) {
         try {

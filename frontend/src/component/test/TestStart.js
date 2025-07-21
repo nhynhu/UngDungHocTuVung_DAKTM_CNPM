@@ -29,12 +29,7 @@ const TestStart = () => {
       try {
         setLoading(true);
         const data = await ApiService.getTestQuestions(testId);
-
-        if (data.questions && data.questions.length > 0) {
-          setQuestions(data.questions);
-        } else {
-          setError('Bài test này chưa có câu hỏi');
-        }
+        setQuestions(data);
       } catch (error) {
         console.error('Error fetching questions:', error);
         setError('Không thể tải câu hỏi. Vui lòng thử lại.');
@@ -56,15 +51,12 @@ const TestStart = () => {
   const handleSubmit = async () => {
     try {
       setSubmitting(true);
-
-      const testData = {
-        testId: parseInt(testId),
-        answers: selectedAnswers,
-        userId: user?.id
-      };
-
-      const result = await ApiService.submitTest(testData);
-      setResult(result);
+      const response = await ApiService.submitTest({
+        testId,
+        userId: user?.id,
+        answers: selectedAnswers
+      });
+      setResult(response);
     } catch (error) {
       console.error('Error submitting test:', error);
       setError('Không thể nộp bài. Vui lòng thử lại.');
@@ -163,7 +155,6 @@ const TestStart = () => {
   const question = questions[currentQuestion];
 
   return (
-<<<<<<< HEAD
     <Container className="mt-4">
       {/* Progress */}
       <div className="mb-4">
@@ -172,87 +163,6 @@ const TestStart = () => {
           <span className="badge bg-primary">
             {currentQuestion + 1}/{questions.length}
           </span>
-=======
-    <div className="test-container">
-      <div className="test-layout">
-        {/* Main Question Area */}
-        <div className="question-area" >
-          <Card>
-            <Card.Header>
-              <h5>Question {currentQuestion + 1}</h5>
-            </Card.Header>
-            <Card.Body>
-              <h6 className="question-text">{currentQuestionData.question}</h6>
-              <Form>
-                {currentQuestionData.options.map((option, index) => (
-                  <Form.Check
-                    key={index}
-                    type="radio"
-                    id={`q${currentQuestion}-option${index}`}
-                    name={`question${currentQuestion}`}
-                    label={option}
-                    checked={selectedAnswers[currentQuestion] === index}
-                    onChange={() => handleAnswerSelect(currentQuestion, index)}
-                    className="option-item"
-                  />
-                ))}
-              </Form>
-            </Card.Body>
-          </Card>
-
-          {/* Navigation Buttons */}
-          <div className="navigation-buttons">
-            <Button 
-              variant="secondary" 
-              onClick={handlePrevious}
-              disabled={currentQuestion === 0}
-            >
-              Previous
-            </Button>
-            <Button 
-              variant="primary" 
-              onClick={handleNext}
-              disabled={currentQuestion === quizData.length - 1}
-            >
-              Next
-            </Button>
-            <Button 
-              variant="warning" 
-              onClick={handleFinish}
-            >
-              Finish
-            </Button>
-          </div>
-        </div>
-
-        {/* Sidebar */}
-        <div className="test-sidebar">
-          {/* Timer */}
-          <Card className="timer-card">
-            <Card.Body className="text-center">
-              <h4 className="timer">{formatTime(timeLeft)}</h4>
-            </Card.Body>
-          </Card>
-
-          {/* Question Navigation */}
-          <Card className="question-nav-card">
-            <Card.Body>
-              <div className="question-grid">
-                {quizData.map((_, index) => (
-                  <button
-                    key={index}
-                    className={`question-btn ${index === currentQuestion ? 'active' : ''} ${
-                      selectedAnswers[index] !== undefined ? 'answered' : ''
-                    }`}
-                    onClick={() => goToQuestion(index)}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
-            </Card.Body>
-          </Card>
->>>>>>> 52f59facf8cdf788a990443461952dd81303f136
         </div>
         <ProgressBar now={progress} label={`${Math.round(progress)}%`} />
       </div>
@@ -263,7 +173,7 @@ const TestStart = () => {
           <h5 className="mb-0">Câu {currentQuestion + 1}/{questions.length}</h5>
         </Card.Header>
         <Card.Body className="p-4">
-          <h4 className="mb-4">{question?.question}</h4>
+          <h4 className="mb-4">{question?.content}</h4>
 
           <div className="mt-3">
             {question?.options?.map((option, index) => (

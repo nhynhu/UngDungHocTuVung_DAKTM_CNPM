@@ -3,72 +3,56 @@ const axios = require('axios');
 const bcrypt = require('bcryptjs');
 
 /**
- * Register - gửi email verification
+ * Register - BYPASS EMAIL VERIFICATION
  */
 exports.register = async (req, res) => {
     const { email, password, fullname } = req.body;
 
     try {
-        // Check if user exists
-        try {
-            const userServiceUrl = process.env.USER_SERVICE_URL || 'http://user-service:5004';
-            const existingUser = await axios.get(`${userServiceUrl}/users/check-email/${email}`);
-            if (existingUser.data.exists) {
-                return res.status(409).json({ error: 'Email already registered' });
-            }
-        } catch (error) {
-            // Email doesn't exist, continue
+        console.log('📝 Registration request:', { email, fullname });
+
+        // Validation
+        if (!email || !password || !fullname) {
+            return res.status(400).json({ error: 'All fields are required' });
         }
 
-        const token = jwt.sign(
-            { email, password, fullname },
-            process.env.JWT_SECRET || 'secret',
-            { expiresIn: process.env.JWT_EXPIRE || '15m' }
-        );
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        const verifyLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${token}`;
+        // Create user directly (bypass email verification)
+        const userServiceUrl = process.env.USER_SERVICE_URL || 'http://user-service:5004';
 
-        // Send verification email
-        const mailServiceUrl = process.env.MAIL_SERVICE_URL || 'http://mail-service:5002';
-        await axios.post(`${mailServiceUrl}/send-verification`, {
-            to: email,
-            username: fullname,
-            verificationLink: verifyLink
+        const response = await axios.post(`${userServiceUrl}/users`, {
+            email,
+            password: hashedPassword,
+            fullname,
+            isVerified: true  // Skip email verification
+        }, {
+            timeout: 10000
         });
+
+        console.log('✅ User created successfully:', response.data);
 
         res.json({
-            message: 'Verification email sent to ' + email,
-            email: email
-        });
-    } catch (err) {
-        console.error('Register error:', err);
-        res.status(500).json({ error: 'Registration failed' });
-    }
-};
-
-/**
- * Verify email và tạo user
- */
-exports.verify = async (req, res) => {
-    const { token } = req.body;
-
-    try {
-        const payload = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-        const hashedPassword = await bcrypt.hash(payload.password, parseInt(process.env.BCRYPT_ROUNDS) || 10);
-
-        // Create user
-        const userServiceUrl = process.env.USER_SERVICE_URL || 'http://user-service:5004';
-        await axios.post(`${userServiceUrl}/users`, {
-            email: payload.email,
-            password: hashedPassword,
-            fullname: payload.fullname,
-            isVerified: true
+            message: 'Account created successfully! You can now login.',
+            email: email,
+            user: {
+                id: response.data.id,
+                email: response.data.email,
+                fullname: response.data.fullname
+            }
         });
 
-        res.json({ message: 'Account verified and created successfully' });
     } catch (err) {
-        console.error('Verify error:', err);
-        res.status(400).json({ error: 'Invalid or expired verification token' });
+        console.error('❌ Register error:', err.message);
+
+        if (err.response?.status === 409) {
+            return res.status(409).json({ error: 'Email already exists' });
+        }
+
+        res.status(500).json({
+            error: 'Registration failed: ' + err.message
+        });
     }
 };
 
@@ -80,11 +64,10 @@ exports.login = async (req, res) => {
 
     try {
         const userServiceUrl = process.env.USER_SERVICE_URL || 'http://user-service:5004';
-        const response = await axios.get(`${userServiceUrl}/users/by-email/${email}`);
+        const response = await axios.get(`${userServiceUrl}/users/email/${email}`);
         const user = response.data;
 
         if (!user) return res.status(404).json({ error: 'User not found' });
-        if (!user.isVerified) return res.status(403).json({ error: 'Please verify your email first' });
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).json({ error: 'Invalid password' });
@@ -92,7 +75,7 @@ exports.login = async (req, res) => {
         const token = jwt.sign(
             { id: user.id, email: user.email, fullname: user.fullname },
             process.env.JWT_SECRET || 'secret',
-            { expiresIn: process.env.JWT_EXPIRE || '24h' }
+            { expiresIn: '24h' }
         );
 
         res.json({
@@ -110,6 +93,16 @@ exports.login = async (req, res) => {
     }
 };
 
+/**
+ * Verify - placeholder
+ */
+exports.verify = async (req, res) => {
+    res.json({ message: 'Verification not implemented' });
+};
+
+/**
+ * Health check
+ */
 exports.healthCheck = (req, res) => {
     res.json({
         service: 'auth-service',

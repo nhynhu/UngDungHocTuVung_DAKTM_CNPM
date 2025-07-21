@@ -272,14 +272,17 @@ code {
 
 .question-area {
   flex: 2;
-  min-height: 500px; /* hoặc lớn hơn nếu cần */
+  min-height: 500px;
+  /* hoặc lớn hơn nếu cần */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
+
 .question-area .card {
   flex-grow: 1;
 }
+
 .test-sidebar {
   display: flex;
   flex-direction: column;
@@ -608,7 +611,7 @@ code {
   height: auto;
 }
 
-<<<<<<< HEAD
+
 /* ==================== LOGIN PAGE STYLES ==================== */
 .login-page {
   display: flex;
@@ -2239,7 +2242,7 @@ body:has(.signup-page) {
   margin: 0 !important;
   padding: 0 !important;
   overflow: hidden !important;
-=======
+}
 
 
 /*PROFILE */
@@ -2247,7 +2250,8 @@ body:has(.signup-page) {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Chiếm full chiều cao trang */
+  height: 100vh;
+  /* Chiếm full chiều cao trang */
   background-color: #ffffff;
 }
 
@@ -2289,5 +2293,4 @@ body:has(.signup-page) {
   position: absolute;
   right: 10px;
   bottom: 10px;
->>>>>>> 52f59facf8cdf788a990443461952dd81303f136
 }

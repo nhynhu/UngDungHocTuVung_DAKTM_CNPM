@@ -1,89 +1,105 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
 class ApiService {
-    // Auth APIs
-    static async login(credentials) {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(credentials)
-        });
-        if (!response.ok) throw new Error('Login failed');
-        return response.json();
+    constructor() {
+        this.baseURL = 'http://localhost:8000/api';
+        this.timeout = 30000;
     }
 
-    static async register(userData) {
-        const response = await fetch(`${API_BASE_URL}/auth/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(userData)
-        });
-        if (!response.ok) throw new Error('Registration failed');
-        return response.json();
-    }
+    async makeRequest(endpoint, options = {}) {
+        const url = `${this.baseURL}${endpoint}`;
 
-    // Topic APIs
-    static async getAllTopics() {
-        const response = await fetch(`${API_BASE_URL}/topics`);
-        if (!response.ok) throw new Error('Failed to fetch topics');
-        return response.json();
-    }
-
-    static async getTopicById(id) {
-        const response = await fetch(`${API_BASE_URL}/topics/${id}`);
-        if (!response.ok) throw new Error('Failed to fetch topic');
-        return response.json();
-    }
-
-    // Word APIs
-    static async getWordsByTopic(topicId) {
-        const response = await fetch(`${API_BASE_URL}/words/topic/${topicId}`);
-        if (!response.ok) throw new Error('Failed to fetch words');
-        return response.json();
-    }
-
-    static async searchWords(query, type = 'all') {
-        const response = await fetch(`${API_BASE_URL}/words/search?q=${encodeURIComponent(query)}&type=${type}`);
-        if (!response.ok) throw new Error('Search failed');
-        return response.json();
-    }
-
-    // Test APIs
-    static async getAllTests() {
-        const response = await fetch(`${API_BASE_URL}/tests`);
-        if (!response.ok) throw new Error('Failed to fetch tests');
-        return response.json();
-    }
-
-    static async getTestQuestions(testId) {
-        const response = await fetch(`${API_BASE_URL}/tests/${testId}`);
-        if (!response.ok) throw new Error('Failed to fetch test questions');
-        return response.json();
-    }
-
-    static async submitTest(testData) {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/results`, {
-            method: 'POST',
+        const config = {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                ...options.headers,
             },
-            body: JSON.stringify(testData)
-        });
-        if (!response.ok) throw new Error('Failed to submit test');
-        return response.json();
+            ...options,
+        };
+
+        console.log('🚀 API Request:', url, config);
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+            const response = await fetch(url, {
+                ...config,
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            console.log('📡 Response status:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ API Error Response:', errorText);
+                throw new Error(errorText || `HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('✅ API Success:', data);
+            return data;
+
+        } catch (error) {
+            console.error('❌ API Request Failed:', error);
+            if (error.name === 'AbortError') {
+                throw new Error('Request timeout - server không phản hồi');
+            }
+            throw error;
+        }
     }
 
-    // User Profile API
-    static async getUserProfile() {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/users/profile`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+    // Auth methods
+    async register(userData) {
+        return this.makeRequest('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify(userData),
         });
-        if (!response.ok) throw new Error('Failed to fetch profile');
-        return response.json();
+    }
+
+    async login(credentials) {
+        return this.makeRequest('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify(credentials),
+        });
+    }
+
+    // Topics methods
+    async getAllTopics() {
+        return this.makeRequest('/topics');
+    }
+
+    async getTopicById(id) {
+        return this.makeRequest(`/topics/${id}`);
+    }
+
+    async getWordsByTopic(topicId) {
+        return this.makeRequest(`/topics/${topicId}/words`);
+    }
+
+    // Search methods
+    async searchWords(query, type = 'all') {
+        return this.makeRequest(`/topics/search?q=${encodeURIComponent(query)}&type=${type}`);
+    }
+
+    // Test methods
+    async getAllTests() {
+        return this.makeRequest('/tests');
+    }
+
+    async getTestQuestions(testId) {
+        return this.makeRequest(`/tests/${testId}/questions`);
+    }
+
+    async submitTest(testData) {
+        return this.makeRequest('/tests/submit', {
+            method: 'POST',
+            body: JSON.stringify(testData),
+        });
     }
 }
 
-export default ApiService;
+export default new ApiService();

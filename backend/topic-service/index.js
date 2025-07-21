@@ -2,14 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const sequelize = require('./models');
+const { sequelize } = require('./models');
 const Topic = require('./models/Topic');
 const Word = require('./models/Word');
 const topicRoutes = require('./routes/topicRoutes');
 const wordRoutes = require('./routes/wordRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 5505;
+const PORT = process.env.PORT || 5005; // SỬA: 5505 -> 5005
 
 // Middleware
 app.use(cors({

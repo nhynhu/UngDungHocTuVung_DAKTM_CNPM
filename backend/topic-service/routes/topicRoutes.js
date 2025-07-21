@@ -7,6 +7,13 @@ const {
     createTopic,
     deleteTopic
 } = require('../controllers/topicController');
+const { searchWords } = require('../controllers/wordController');
+
+// Search route - PHẢI ĐẶT TRƯỚC ROUTE DYNAMIC
+router.get('/search', searchWords);
+
+// Routes for words by topic - Thêm route này
+router.get('/:topicId/words', require('../controllers/wordController').getWordsByTopic);
 
 // Public routes
 router.get('/', getAllTopics);

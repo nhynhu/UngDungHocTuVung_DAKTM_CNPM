@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { createUser, getUserByEmail, getUserProfile, checkEmailExists } = require('../controllers/userController');
-const { authenticateToken } = require('../middlewares/authMiddleware');
+const userController = require('../controllers/userController');
 
-// Auth routes (không cần token)
-router.post('/', createUser); // Tạo user khi verify
-router.get('/email/:email', getUserByEmail); // SỬA: /email/:email thay vì /by-email/:email
-router.get('/check-email/:email', checkEmailExists); // Register cần
+// POST /users - Create user
+router.post('/', userController.createUser);
 
-// Protected routes (cần token)
-router.get('/profile', authenticateToken, getUserProfile);
+// GET /users/email/:email - Get user by email
+router.get('/email/:email', userController.getUserByEmail);
+
+// GET /users/check-email/:email - Check if email exists
+router.get('/check-email/:email', userController.checkEmailExists);
 
 module.exports = router;

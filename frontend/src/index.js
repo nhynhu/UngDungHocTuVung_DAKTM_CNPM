@@ -4,45 +4,15 @@ import './styles.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
-<<<<<<< HEAD
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <App />
-=======
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import HomePage from './component/home/HomePage'; 
-import Topic from './component/learn/Topic';
-import Test from './component/test/Test'; 
-import Lesson from './component/learn/Lesson';
-import TestStart from './component/test/TestStart';
-import SearchPage from './component/search/SearchPage';
-import Login from './component/account/Login';
-import Signup from './component/account/Signup';
-import Profile from './component/account/Profile';
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route index element={<HomePage />} />
-          <Route path="topics" element={<Topic />}/>
-          <Route path="lessons" element={<Lesson />} />
-          <Route path="tests" element={<Test />} />
-          <Route path="dotests" element={<TestStart />} />
-          <Route path="search" element={<SearchPage />} />
-          <Route path="profile" element={< Profile />}/>
-        </Route>
-        <Route>
-           <Route path="logins" element={< Login />}/>
-           <Route path="signup" element={< Signup />}/>
-        </Route>
-      </Routes>
-    </BrowserRouter>
->>>>>>> 52f59facf8cdf788a990443461952dd81303f136
   </React.StrictMode>
 );
 
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

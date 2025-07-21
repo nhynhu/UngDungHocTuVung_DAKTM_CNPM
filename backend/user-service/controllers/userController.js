@@ -5,44 +5,32 @@ const User = require('../models/User');
  */
 exports.createUser = async (req, res) => {
     try {
-        const { email, password, fullname, isVerified } = req.body;
+        const { email, password, fullname, isVerified = false } = req.body;
 
+        // Check if user already exists
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
-            return res.status(409).json({ error: 'User already exists' });
+            return res.status(409).json({ error: 'Email already exists' });
         }
 
         const user = await User.create({
             email,
             password,
             fullname,
-            isVerified: isVerified || true
+            isVerified
         });
+
+        console.log('✅ User created:', user.email);
 
         res.status(201).json({
             id: user.id,
             email: user.email,
             fullname: user.fullname,
-            message: 'User created successfully'
+            isVerified: user.isVerified
         });
-    } catch (err) {
-        console.error('Create user error:', err);
-        res.status(500).json({ error: err.message });
-    }
-};
-
-/**
- * Check email exists
- */
-exports.checkEmailExists = async (req, res) => {
-    try {
-        const user = await User.findOne({
-            where: { email: req.params.email }
-        });
-        res.json({ exists: !!user });
-    } catch (err) {
-        console.error('Check email error:', err);
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        console.error('Create user error:', error);
+        res.status(500).json({ error: 'Failed to create user' });
     }
 };
 
@@ -51,17 +39,32 @@ exports.checkEmailExists = async (req, res) => {
  */
 exports.getUserByEmail = async (req, res) => {
     try {
-        const user = await User.findOne({
-            where: { email: req.params.email },
-            attributes: ['id', 'email', 'fullname', 'password', 'isVerified']
-        });
+        const { email } = req.params;
+        const user = await User.findOne({ where: { email } });
+
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
+
         res.json(user);
-    } catch (err) {
-        console.error('Get user by email error:', err);
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        console.error('Get user error:', error);
+        res.status(500).json({ error: 'Failed to get user' });
+    }
+};
+
+/**
+ * Check email exists
+ */
+exports.checkEmailExists = async (req, res) => {
+    try {
+        const { email } = req.params;
+        const user = await User.findOne({ where: { email } });
+
+        res.json({ exists: !!user });
+    } catch (error) {
+        console.error('Check email error:', error);
+        res.status(500).json({ error: 'Failed to check email' });
     }
 };
 

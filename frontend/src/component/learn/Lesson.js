@@ -46,7 +46,7 @@ const Lesson = () => {
   if (loading) {
     return (
       <Container className="mt-5">
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '300px' }}>
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
           <div className="text-center">
             <Spinner animation="border" variant="primary" style={{ width: '3rem', height: '3rem' }} />
             <p className="mt-3">Đang tải bài học...</p>
@@ -76,7 +76,6 @@ const Lesson = () => {
   }
 
   return (
-<<<<<<< HEAD
     <Container className="mt-4">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -87,63 +86,31 @@ const Lesson = () => {
           </p>
         </div>
         <Button variant="outline-secondary" onClick={() => navigate('/topics')}>
-          ← Quay về
+          📚 Chọn chủ đề khác
         </Button>
       </div>
 
-      {/* Từ vựng */}
+      {/* Word List */}
       <Row>
-        {words.length > 0 ? (
-          words.map((word, index) => (
-            <Col key={word.id || index} lg={6} md={6} sm={12} className="mb-3">
-              <Card className="h-100 shadow-sm">
-                <Card.Body>
-                  <div className="d-flex justify-content-between align-items-start mb-2">
-                    <Card.Title className="text-primary mb-0">
-                      {word.english}
-                    </Card.Title>
-                    <small className="text-muted">#{index + 1}</small>
-                  </div>
-
-                  <Card.Text>
-                    <strong className="text-success">Nghĩa:</strong> {word.vietnamese}
-                    {word.pronunciation && (
-                      <>
-                        <br />
-                        <strong className="text-info">Phát âm:</strong> {word.pronunciation}
-                      </>
-                    )}
-                    {word.example && (
-                      <>
-                        <br />
-                        <strong className="text-warning">Ví dụ:</strong> {word.example}
-                      </>
-                    )}
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))
-        ) : (
-          <Col xs={12}>
-            <Alert variant="info" className="text-center">
-              <h5>📝 Chưa có từ vựng</h5>
-              <p>Chủ đề này chưa có từ vựng nào. Vui lòng chọn chủ đề khác.</p>
-              <Button variant="primary" onClick={() => navigate('/topics')}>
-                Chọn chủ đề khác
-              </Button>
-            </Alert>
+        {words.map((word, index) => (
+          <Col key={word.id || index} md={6} lg={4} className="mb-3">
+            <Card className="h-100 shadow-sm">
+              <Card.Body>
+                <Card.Title className="text-primary">{word.english}</Card.Title>
+                <Card.Text className="text-muted">{word.vietnamese}</Card.Text>
+              </Card.Body>
+            </Card>
           </Col>
-        )}
+        ))}
       </Row>
 
-      {/* Action buttons */}
+      {/* Action Buttons */}
       {words.length > 0 && (
-        <div className="text-center mt-4 mb-4">
-          <div className="d-flex gap-2 justify-content-center flex-wrap">
+        <div className="text-center mt-5">
+          <div className="d-flex justify-content-center gap-3 flex-wrap">
             <Button
               variant="primary"
-              onClick={() => navigate(`/flashcards?topicId=${topicId}`)}
+              onClick={() => navigate(`/flashcard?topicId=${topicId}`)}
             >
               🃏 Luyện tập Flashcard
             </Button>
@@ -164,54 +131,6 @@ const Lesson = () => {
       )}
     </Container>
   );
-=======
-    <div style={{ textAlign: 'center', marginTop: '60px', position: 'relative'}}>
-      {/* Ảnh góc trái trên */}
-    <img
-      src="image/flashcard2.png"
-      alt="ảnh góc trái trên"
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '120px',
-        opacity: 0.9,
-        zIndex: 1,
-      }}
-    />
-      <h1 style={{color:'#E7487D'}}>Chủ đề</h1>
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 220}}>
-        <Flashcard front={flashcards[index].front} back={flashcards[index].back} />
-      </div>
-      <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', gap: 24 }}>
-        <button onClick={prevCard} style={{color: '#E7487D'}}>&#8592;</button>
-        <button onClick={nextCard} style={{color: '#E7487D'}} >&#8594;</button>
-      </div>
-     
-      {/* Ảnh góc phải dưới */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '20px',
-          right: 0,
-          zIndex: -1,
-          width: '120px',
-
-        }}
-      >
-        <img
-          src="/image/flashcard1.jpg"
-          alt="Trang trí góc phải"
-          style={{
-            width: '100%',
-            opacity: 0.8,
-            height: 'auto',
-          }}
-        />
-      </div>
-          </div>
-        );
->>>>>>> 52f59facf8cdf788a990443461952dd81303f136
 };
 
 export default Lesson;
