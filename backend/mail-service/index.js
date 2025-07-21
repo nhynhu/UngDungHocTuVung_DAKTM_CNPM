@@ -1,22 +1,41 @@
 require('dotenv').config();
 const express = require('express');
-const nodemailer = require('nodemailer');
+const cors = require('cors');
+const mailRoutes = require('./routes/mailRoutes');
+
 const app = express();
+const PORT = process.env.PORT || 5002;
+
+// Middleware
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true
+}));
 app.use(express.json());
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user: process.env.EMAIL, pass: process.env.EMAIL_PASS }
+// Routes
+app.use('/mail', mailRoutes);
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({
+        service: 'mail-service',
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        emailConfigured: !!process.env.EMAIL
+    });
 });
 
-app.post('/send', async (req, res) => {
-    const { to, subject, text } = req.body;
-    try {
-        await transporter.sendMail({ from: process.env.EMAIL, to, subject, text });
-        res.json({ message: 'Email sent' });
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to send email' });
-    }
+// Error handler
+app.use((error, req, res, next) => {
+    console.error('Mail service error:', error);
+    res.status(500).json({
+        error: 'Internal server error',
+        message: error.message
+    });
 });
 
-app.listen(5002, () => console.log('Mail service on port 5002'));
+app.listen(PORT, () => {
+    console.log(`✉️  Mail Service running on port ${PORT}`);
+    console.log(`📧 Email configured: ${!!process.env.EMAIL}`);
+});

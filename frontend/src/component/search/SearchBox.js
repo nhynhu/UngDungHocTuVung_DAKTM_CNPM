@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
-import { performSearch } from '../../data/searchData';
-import SearchItem from './SearchItem';
+import ApiService from '../../services/api'; // THÊM
 
 const SearchBox = () => {
     const navigate = useNavigate();
@@ -10,19 +9,25 @@ const SearchBox = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [showResults, setShowResults] = useState(false);
 
-    // Hàm tìm kiếm
-    const handleSearch = (query) => {
+    // Hàm tìm kiếm qua API
+    const handleSearch = async (query) => {
         setSearchQuery(query);
-        
+
         if (query.trim() === '') {
             setSearchResults([]);
             setShowResults(false);
             return;
         }
 
-        const results = performSearch(query);
-        setSearchResults(results.slice(0, 8)); // Giới hạn 8 kết quả
-        setShowResults(true);
+        try {
+            const results = await ApiService.searchWords(query); // SỬA: Gọi API
+            setSearchResults(results.slice(0, 8));
+            setShowResults(true);
+        } catch (error) {
+            console.error('Search error:', error);
+            setSearchResults([]);
+            setShowResults(false);
+        }
     };
 
     // Xử lý khi nhấn nút search hoặc Enter
@@ -37,7 +42,7 @@ const SearchBox = () => {
     // Xử lý khi chọn kết quả
     const handleSelectResult = (result) => {
         if (result.type === 'topic') {
-            navigate('/topics');
+            navigate(`/lessons?topicId=${result.id}`);
         } else {
             navigate(`/search?q=${encodeURIComponent(result.english)}`);
         }
@@ -64,7 +69,7 @@ const SearchBox = () => {
                     onFocus={() => searchQuery && setShowResults(true)}
                     onBlur={handleBlur}
                 />
-                <Button 
+                <Button
                     type="submit"
                     style={{ backgroundColor: '#FFDDDD', borderColor: '#FFDDDD', color: '#fff', height: '32px', padding: '0 12px' }}
                 >
@@ -76,11 +81,18 @@ const SearchBox = () => {
             {showResults && searchResults.length > 0 && (
                 <div className="search-dropdown">
                     {searchResults.map((result, index) => (
-                        <SearchItem 
+                        <div
                             key={index}
-                            result={result}
-                            onClick={handleSelectResult}
-                        />
+                            className="search-item"
+                            onClick={() => handleSelectResult(result)}
+                        >
+                            <div className="search-item-title">
+                                {result.type === 'topic' ? result.nameVi || result.name : result.english}
+                            </div>
+                            <div className="search-item-subtitle">
+                                {result.type === 'topic' ? `${result.wordCount} từ vựng` : result.vietnamese}
+                            </div>
+                        </div>
                     ))}
                 </div>
             )}
@@ -88,9 +100,8 @@ const SearchBox = () => {
             {/* Thông báo không có kết quả */}
             {showResults && searchResults.length === 0 && searchQuery.trim() && (
                 <div className="search-dropdown">
-                    <div className="search-no-result">
-                        <i className="bi bi-search"></i>
-                        <span>Not found "{searchQuery}"</span>
+                    <div className="search-no-results">
+                        Không tìm thấy kết quả cho "{searchQuery}"
                     </div>
                 </div>
             )}

@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('./index');
+const { sequelize } = require('./index');
 
 const Test = sequelize.define('Test', {
     name: { type: DataTypes.STRING, allowNull: false },

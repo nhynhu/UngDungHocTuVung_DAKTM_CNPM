@@ -10,7 +10,7 @@ const Header = () => {
     const navigate = useNavigate();
 
     const handleLoginClick = () => {
-        navigate('/logins');
+        navigate('/login');
     };
 
     const handleSignupClick = () => {
@@ -20,19 +20,19 @@ const Header = () => {
         <Navbar expand="lg" className="bg-body-tertiary">
             <Container fluid>
                 <Navbar.Brand>
-                  <img
-                    src="logo192.png"
-                    alt="Logo"
-                    style={{ 
-                      width:30, 
-                      height:'auto',
-                      transform: 'scale(2.3)',
-                      transformOrigin: 'left center',
-                      marginLeft: '35px',
-                      marginTop: '10px'
+                    <img
+                        src="logo192.png"
+                        alt="Logo"
+                        style={{
+                            width: 30,
+                            height: 'auto',
+                            transform: 'scale(2.3)',
+                            transformOrigin: 'left center',
+                            marginLeft: '35px',
+                            marginTop: '10px'
 
-                    }}
-                  />
+                        }}
+                    />
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="navbarScroll" />
                 <Navbar.Collapse id="navbarScroll">
@@ -47,7 +47,7 @@ const Header = () => {
                         </NavDropdown>
                         <Button className='btn-login' onClick={handleLoginClick}>Log in</Button>
                         <Button className='btn-signup' onClick={handleSignupClick}>Sign up</Button>
-                    </Nav>    
+                    </Nav>
                 </Navbar.Collapse>
             </Container>
         </Navbar>

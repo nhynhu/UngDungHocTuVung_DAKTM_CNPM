@@ -15,42 +15,44 @@ code {
 
 /* ===== APP.CSS ===== */
 .app-container {
-    .header-container {
-        .btn-login.btn.btn-primary {
-            border-radius: 5px;
-            margin-top: 10px;
-            margin-right: 20px;
-            padding: 0 16px;
-            height: 42px;
-            border: 1px solid;
-            background-color: #FFDDDD;
-            color: #000;
-        }
-        .btn-signup.btn.btn-primary {
-            border-radius: 5px;
-            padding: 0 16px;
-            margin-top: 10px;
-            height: 42px;
-            border: 1px solid;
-            background-color: #000;
-            color: #FFDDDD;
-        }
-
-        .bg-body-tertiary {
-            z-index: 10;
-            background-color: #FFDDDD !important;
-
-            .nav-link.active {
-                color: #e402a4 !important;
-            }
-        }
+  .header-container {
+    .btn-login.btn.btn-primary {
+      border-radius: 5px;
+      margin-top: 10px;
+      margin-right: 20px;
+      padding: 0 16px;
+      height: 42px;
+      border: 1px solid;
+      background-color: #FFDDDD;
+      color: #000;
     }
+
+    .btn-signup.btn.btn-primary {
+      border-radius: 5px;
+      padding: 0 16px;
+      margin-top: 10px;
+      height: 42px;
+      border: 1px solid;
+      background-color: #000;
+      color: #FFDDDD;
+    }
+
+    .bg-body-tertiary {
+      z-index: 10;
+      background-color: #FFDDDD !important;
+
+      .nav-link.active {
+        color: #e402a4 !important;
+      }
+    }
+  }
 }
 
 /* ===== HOME CONTENT.CSS ===== */
 .home-menu-container {
   height: 100%;
 }
+
 .home-content-main {
   padding: 32px 16px;
 }
@@ -192,7 +194,8 @@ code {
   width: 500px;
   height: 300px;
   perspective: 1000px;
-  margin: 20px auto; /* căn giữa ngang */
+  margin: 20px auto;
+  /* căn giữa ngang */
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -211,7 +214,8 @@ code {
   transform: rotateY(180deg);
 }
 
-.card-front, .card-back {
+.card-front,
+.card-back {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -224,7 +228,7 @@ code {
   align-items: center;
   font-size: 1.25rem;
   background-color: white;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .card-back {
@@ -374,15 +378,15 @@ code {
   .test-layout {
     flex-direction: column;
   }
-  
+
   .question-grid {
     grid-template-columns: repeat(5, 1fr);
   }
-  
+
   .navigation-buttons {
     flex-direction: column;
   }
-  
+
   .navigation-buttons button {
     margin-bottom: 10px;
   }
@@ -423,6 +427,7 @@ code {
   margin: 0;
   color: #495057;
 }
+
 /* trang login */
 /* Căn giữa toàn bộ form*/
 /* Toàn màn hình: căn giữa */
@@ -506,7 +511,8 @@ code {
 }
 
 .logo-container img {
-  width: 400px;   /* hoặc bất kỳ kích thước nào phù hợp */
+  width: 400px;
+  /* hoặc bất kỳ kích thước nào phù hợp */
   height: auto;
 }
 
@@ -591,6 +597,1639 @@ code {
 }
 
 .logo-container img {
-  width: 400px;   /* hoặc bất kỳ kích thước nào phù hợp */
+  width: 400px;
+  /* hoặc bất kỳ kích thước nào phù hợp */
   height: auto;
+}
+
+/* ==================== LOGIN PAGE STYLES ==================== */
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ffeef8 0%, #f8e6f0 50%, #ffe0e6 100%);
+  overflow: hidden;
+  /* Ngăn scroll ngang */
+}
+
+.login-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: transparent;
+  /* Xóa background riêng */
+  position: relative;
+}
+
+/* Thêm decoration cho left side */
+.login-left::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 105, 180, 0.1) 0%, transparent 70%);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  33% {
+    transform: translateY(-20px) rotate(120deg);
+  }
+
+  66% {
+    transform: translateY(10px) rotate(240deg);
+  }
+}
+
+.logo-section {
+  text-align: center;
+  max-width: 500px;
+  position: relative;
+  z-index: 10;
+}
+
+.login-logo {
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 30px rgba(255, 105, 180, 0.2));
+  transition: all 0.3s ease;
+  background: transparent !important;
+  /* Đảm bảo không có background */
+  border: none !important;
+  /* Đảm bảo không có border */
+}
+
+.login-logo:hover {
+  filter: drop-shadow(0 15px 35px rgba(255, 105, 180, 0.3));
+  transform: scale(1.02);
+}
+
+.login-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+/* Decoration bubbles */
+.login-right::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 10%;
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 105, 180, 0.1);
+  border-radius: 50%;
+  animation: bubble1 4s ease-in-out infinite;
+}
+
+.login-right::after {
+  content: '';
+  position: absolute;
+  bottom: 30%;
+  right: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 182, 193, 0.1);
+  border-radius: 50%;
+  animation: bubble2 5s ease-in-out infinite reverse;
+}
+
+@keyframes bubble1 {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: translateY(-15px);
+    opacity: 1;
+  }
+}
+
+@keyframes bubble2 {
+
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: translateY(-20px) scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 45px 40px;
+  border-radius: 25px;
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+  backdrop-filter: blur(15px);
+  position: relative;
+  z-index: 10;
+}
+
+/* Glass effect enhancement */
+.login-form-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 25px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.login-form {
+  width: 100%;
+  position: relative;
+}
+
+.form-group {
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+  color: #555;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 15px 20px;
+  border: 2px solid #e8ecf0;
+  border-radius: 15px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+  box-sizing: border-box;
+  position: relative;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #ff69b4;
+  box-shadow: 0 0 0 4px rgba(255, 105, 180, 0.1);
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+}
+
+.form-input:disabled {
+  background: rgba(245, 245, 245, 0.8);
+  cursor: not-allowed;
+}
+
+.form-input::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+.login-button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+  color: white;
+  border: none;
+  border-radius: 15px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.login-button:hover::before {
+  left: 100%;
+}
+
+.login-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ff1493 0%, #dc143c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(255, 20, 147, 0.3);
+}
+
+.login-button:disabled {
+  background: linear-gradient(135deg, #ccc 0%, #999 100%);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.error-message {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  padding: 15px;
+  border-radius: 12px;
+  border-left: 4px solid #dc3545;
+  margin-bottom: 25px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 25px;
+}
+
+.register-btn {
+  color: #ff69b4;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.register-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #ff69b4;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.register-btn:hover {
+  color: #ff1493;
+  text-decoration: none;
+}
+
+.register-btn:hover::after {
+  width: 100%;
+}
+
+/* ==================== SIGNUP PAGE STYLES ==================== */
+.signup-page {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 50%, #e6ffe6 100%);
+  overflow: hidden;
+}
+
+.signup-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: transparent;
+  position: relative;
+}
+
+/* Thêm decoration cho left side */
+.signup-left::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(76, 175, 80, 0.1) 0%, transparent 70%);
+  animation: floatGreen 6s ease-in-out infinite;
+}
+
+@keyframes floatGreen {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  33% {
+    transform: translateY(-20px) rotate(120deg);
+  }
+
+  66% {
+    transform: translateY(10px) rotate(240deg);
+  }
+}
+
+.signup-logo {
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 30px rgba(76, 175, 80, 0.2));
+  transition: all 0.3s ease;
+  background: transparent !important;
+  border: none !important;
+  animation: logoFloatGreen 4s ease-in-out infinite;
+}
+
+@keyframes logoFloatGreen {
+
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+
+  25% {
+    transform: translateY(-8px) scale(1.01);
+  }
+
+  50% {
+    transform: translateY(-15px) scale(1.02);
+  }
+
+  75% {
+    transform: translateY(-8px) scale(1.01);
+  }
+}
+
+.signup-logo:hover {
+  filter: drop-shadow(0 15px 35px rgba(76, 175, 80, 0.3));
+  transform: scale(1.02);
+}
+
+.signup-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+/* Decoration bubbles for signup */
+.signup-right::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 10%;
+  width: 60px;
+  height: 60px;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 50%;
+  animation: bubbleGreen1 4s ease-in-out infinite;
+}
+
+.signup-right::after {
+  content: '';
+  position: absolute;
+  bottom: 30%;
+  right: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(129, 199, 132, 0.1);
+  border-radius: 50%;
+  animation: bubbleGreen2 5s ease-in-out infinite reverse;
+}
+
+@keyframes bubbleGreen1 {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: translateY(-15px);
+    opacity: 1;
+  }
+}
+
+@keyframes bubbleGreen2 {
+
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: translateY(-20px) scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.signup-form-container {
+  width: 100%;
+  max-width: 450px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 45px 40px;
+  border-radius: 25px;
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+  backdrop-filter: blur(15px);
+  position: relative;
+  z-index: 10;
+}
+
+/* Glass effect enhancement for signup */
+.signup-form-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 25px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.signup-form {
+  width: 100%;
+  position: relative;
+}
+
+.signup-title {
+  text-align: center;
+  margin-bottom: 8px;
+  color: #2e7d32;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.signup-subtitle {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #666;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.signup-button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+  color: white;
+  border: none;
+  border-radius: 15px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.signup-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.signup-button:hover::before {
+  left: 100%;
+}
+
+.signup-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(46, 125, 50, 0.3);
+}
+
+.signup-button:disabled {
+  background: linear-gradient(135deg, #ccc 0%, #999 100%);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.success-message {
+  background: rgba(76, 175, 80, 0.1);
+  color: #2e7d32;
+  padding: 15px;
+  border-radius: 12px;
+  border-left: 4px solid #4caf50;
+  margin-bottom: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 25px;
+}
+
+.login-link span {
+  color: #666;
+  font-size: 14px;
+}
+
+.login-btn {
+  color: #4caf50;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  margin-left: 5px;
+}
+
+.login-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #4caf50;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.login-btn:hover {
+  color: #2e7d32;
+  text-decoration: none;
+}
+
+.login-btn:hover::after {
+  width: 100%;
+}
+
+/* Form input override for signup */
+.signup-form .form-input:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+}
+
+.signup-form .form-input:focus {
+  animation: inputGlowGreen 0.5s ease;
+}
+
+@keyframes inputGlowGreen {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+    transform: translateY(0);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(76, 175, 80, 0.2);
+    transform: translateY(-1px);
+  }
+
+  100% {
+    box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+    transform: translateY(-1px);
+  }
+}
+
+/* Responsive Design for Signup */
+@media (max-width: 768px) {
+  .signup-page {
+    flex-direction: column;
+  }
+
+  .signup-left {
+    flex: none;
+    min-height: 250px;
+    padding: 30px 20px;
+  }
+
+  .signup-right {
+    flex: 1;
+    padding: 30px 20px;
+  }
+
+  .signup-form-container {
+    padding: 35px 25px;
+    margin: 0 10px;
+    border-radius: 20px;
+  }
+
+  .signup-logo {
+    max-width: 280px;
+  }
+
+  .signup-title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-left {
+    min-height: 200px;
+    padding: 20px 15px;
+  }
+
+  .signup-form-container {
+    padding: 30px 20px;
+    border-radius: 18px;
+  }
+
+  .signup-form .form-input {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .signup-button {
+    padding: 14px;
+    font-size: 14px;
+  }
+
+  .signup-logo {
+    max-width: 220px;
+  }
+
+  .signup-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Success animation */
+.success-message {
+  animation: successSlide 0.5s ease-out;
+}
+
+@keyframes successSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading state for signup button */
+.signup-button:disabled {
+  position: relative;
+}
+
+.signup-button:disabled::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==================== AUTH ROUTES OVERRIDE ==================== */
+/* Đảm bảo login/signup page không bị ảnh hưởng bởi layout chính */
+.login-page,
+.signup-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Override cho main container khi là auth route */
+.conten-container {
+  position: relative;
+}
+
+/* Đảm bảo không có margin/padding thừa cho auth pages */
+.app-container {
+  position: relative;
+}
+
+/* Auth pages không cần responsive cho layout chính */
+@media (max-width: 768px) {
+
+  .login-page,
+  .signup-page {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+  }
+}
+
+/* Responsive Design cho Login khi standalone */
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column;
+  }
+
+  .login-left {
+    flex: none;
+    min-height: 250px;
+    padding: 30px 20px;
+  }
+
+  .login-right {
+    flex: 1;
+    padding: 30px 20px;
+  }
+
+  .login-form-container {
+    padding: 35px 25px;
+    margin: 0 10px;
+    border-radius: 20px;
+  }
+
+  .login-logo {
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-left {
+    min-height: 200px;
+    padding: 20px 15px;
+  }
+
+  .login-form-container {
+    padding: 30px 20px;
+    border-radius: 18px;
+  }
+
+  .login-form .form-input {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .login-button {
+    padding: 14px;
+    font-size: 14px;
+  }
+
+  .login-logo {
+    max-width: 220px;
+  }
+}
+
+/* Animation cho logo - Enhanced cho standalone */
+.login-logo {
+  animation: logoFloat 4s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+
+  25% {
+    transform: translateY(-8px) scale(1.01);
+  }
+
+  50% {
+    transform: translateY(-15px) scale(1.02);
+  }
+
+  75% {
+    transform: translateY(-8px) scale(1.01);
+  }
+}
+
+/* Input focus animation - Enhanced cho standalone */
+.login-form .form-input:focus,
+.signup-form .form-input:focus {
+  animation: inputGlow 0.5s ease;
+}
+
+@keyframes inputGlow {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-1px);
+  }
+
+  100% {
+    transform: translateY(-1px);
+  }
+}
+
+/* Xóa bỏ style conflicts */
+.login-page .login-button,
+.signup-page .signup-button {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.login-page .login-button:hover,
+.login-page .login-button:focus,
+.login-page .login-button:active,
+.signup-page .signup-button:hover,
+.signup-page .signup-button:focus,
+.signup-page .signup-button:active {
+  box-shadow: 0 15px 30px rgba(255, 20, 147, 0.3) !important;
+  outline: none !important;
+  border: none !important;
+}
+
+/* Đảm bảo auth pages luôn full screen */
+.login-page *,
+.signup-page * {
+  box-sizing: border-box;
+}
+
+/* Loading spinner cho auth pages */
+.login-button:disabled::after,
+.signup-button:disabled::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==================== SIMPLE AUTH DESIGN ==================== */
+
+.login-page,
+.signup-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.signup-page {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.signup-page .auth-card::before {
+  background: linear-gradient(90deg, #4facfe, #00f2fe);
+}
+
+/* ===== LOGO HEADER - LIÊN KẾT VỚI FORM ===== */
+.auth-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.auth-logo-large {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 15px;
+  transition: transform 0.3s ease;
+}
+
+.auth-logo-large:hover {
+  transform: scale(1.05) rotate(5deg);
+}
+
+/* ===== DIVIDER - TẠO SỰ LIÊN KẾT ===== */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 25px 0;
+  position: relative;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ddd, transparent);
+}
+
+.divider-text {
+  padding: 0 15px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #667eea;
+  background: white;
+  position: relative;
+}
+
+.signup-page .divider-text {
+  color: #4facfe;
+}
+
+/* ===== FORM STYLES ===== */
+.auth-form {
+  width: 100%;
+}
+
+.auth-form .form-group {
+  margin-bottom: 20px;
+}
+
+.auth-form .form-group label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.auth-form .form-control {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: #fafafa;
+  box-sizing: border-box;
+}
+
+.auth-form .form-control:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
+}
+
+.signup-page .auth-form .form-control:focus {
+  border-color: #4facfe;
+  box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+}
+
+.auth-form .form-control:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* ===== BUTTON STYLES ===== */
+.btn-auth {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-auth:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-auth:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-signup {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.btn-signup:hover:not(:disabled) {
+  box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+}
+
+/* ===== ALERTS ===== */
+.auth-form .alert {
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border: none;
+}
+
+.auth-form .alert-danger {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  border-left: 3px solid #dc3545;
+}
+
+.auth-form .alert-success {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+  border-left: 3px solid #28a745;
+}
+
+/* ===== FOOTER ===== */
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 20px;
+}
+
+.auth-footer p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #667eea;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 5px;
+  transition: color 0.3s ease;
+}
+
+.signup-page .link-btn {
+  color: #4facfe;
+}
+
+.link-btn:hover {
+  color: #5a67d8;
+  text-decoration: underline;
+}
+
+.signup-page .link-btn:hover {
+  color: #3182ce;
+}
+
+/* ===== ANIMATIONS ===== */
+.auth-logo-large {
+  animation: logoGlowLarge 3s ease-in-out infinite;
+}
+
+@keyframes logoGlowLarge {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.3));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.5));
+  }
+}
+
+.signup-page .auth-logo-large {
+  animation: logoGlowBlueLarge 3s ease-in-out infinite;
+}
+
+@keyframes logoGlowBlueLarge {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px rgba(79, 172, 254, 0.3));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 20px rgba(79, 172, 254, 0.5));
+  }
+}
+
+.auth-card {
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 15px;
+  }
+
+  .auth-card {
+    padding: 30px 25px;
+    border-radius: 15px;
+  }
+
+  .auth-logo-large {
+    width: 80px;
+    height: 80px;
+  }
+
+  .auth-form .form-control {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .btn-auth {
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
+/* ===== OVERRIDE CONFLICTS ===== */
+.auth-form .form-control {
+  height: auto !important;
+  background: #fafafa !important;
+}
+
+.auth-form .form-control:focus {
+  background: white !important;
+}
+
+.btn-auth {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn-signup {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+}
+
+.btn-auth:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3) !important;
+}
+
+.btn-signup:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3182ce 0%, #0ea5e9 100%) !important;
+  box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3) !important;
+}
+
+/* ==================== NEW DESIGN THEO HÌNH - OVERRIDE ALL ==================== */
+
+/* Force override tất cả auth styles cũ */
+.login-page,
+.signup-page {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 9999 !important;
+  background: #ffe0e6 !important;
+  /* Màu hồng nhẹ như hình */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100vh !important;
+  padding: 20px !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+.signup-page {
+  background: #e0f2ff !important;
+  /* Màu xanh nhẹ cho signup */
+}
+
+/* Logo ở góc trên trái - FORCE OVERRIDE */
+.auth-logo-corner {
+  position: absolute !important;
+  top: 20px !important;
+  left: 20px !important;
+  width: 200px !important;
+  height: auto !important;
+  z-index: 10 !important;
+  object-fit: contain !important;
+}
+
+/* Container form ở giữa - FORCE OVERRIDE */
+.login-container {
+  width: 100% !important;
+  max-width: 400px !important;
+  padding: 0 !important;
+  position: relative !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Form card với background hồng đậm hơn - FORCE OVERRIDE */
+.auth-card {
+  background: #ffb3c1 !important;
+  /* Màu hồng đậm như hình */
+  border-radius: 25px !important;
+  padding: 60px 40px 40px 40px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: none !important;
+  width: 100% !important;
+  max-width: 380px !important;
+}
+
+.signup-page .auth-card {
+  background: #b3d9ff !important;
+  /* Màu xanh đậm cho signup */
+}
+
+/* BỎ TẤT CẢ ELEMENTS KHÔNG CẦN THIẾT - FORCE HIDE */
+.auth-header {
+  display: none !important;
+}
+
+.auth-divider {
+  display: none !important;
+}
+
+.auth-logo-large {
+  display: none !important;
+}
+
+.auth-card::before {
+  display: none !important;
+}
+
+/* Form styles - FORCE OVERRIDE */
+.auth-form {
+  width: 100% !important;
+}
+
+.auth-form .form-group {
+  margin-bottom: 25px !important;
+}
+
+.auth-form .form-group label {
+  display: block !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  margin-bottom: 8px !important;
+  font-size: 1rem !important;
+}
+
+.auth-form .form-control {
+  width: 100% !important;
+  padding: 15px 20px !important;
+  border: none !important;
+  border-radius: 25px !important;
+  font-size: 16px !important;
+  transition: all 0.3s ease !important;
+  background: white !important;
+  box-sizing: border-box !important;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+  outline: none !important;
+}
+
+.auth-form .form-control:focus {
+  outline: none !important;
+  background: white !important;
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.1),
+    0 0 0 3px rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-1px) !important;
+  border: none !important;
+}
+
+.auth-form .form-control:disabled {
+  background: #f0f0f0 !important;
+  cursor: not-allowed !important;
+}
+
+/* Button với style hồng như hình - FORCE OVERRIDE */
+.btn-auth {
+  width: 100% !important;
+  padding: 15px !important;
+  border: none !important;
+  border-radius: 25px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  margin: 30px 0 20px 0 !important;
+  background: #ff69b4 !important;
+  /* Màu hồng đậm như button trong hình */
+  color: white !important;
+  text-transform: capitalize !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn-auth:hover:not(:disabled) {
+  background: #ff1493 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(255, 20, 147, 0.3) !important;
+  outline: none !important;
+  border: none !important;
+}
+
+.btn-auth:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(255, 20, 147, 0.3) !important;
+}
+
+.btn-auth:disabled {
+  background: #ccc !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-signup {
+  background: #4a90e2 !important;
+  /* Màu xanh cho signup */
+}
+
+.btn-signup:hover:not(:disabled) {
+  background: #357abd !important;
+  box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3) !important;
+}
+
+/* Footer link - FORCE OVERRIDE */
+.auth-footer {
+  text-align: center !important;
+  margin-top: 15px !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.auth-footer p {
+  color: #333 !important;
+  font-size: 14px !important;
+  margin: 0 !important;
+}
+
+.link-btn {
+  background: none !important;
+  border: none !important;
+  color: #333 !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  margin-left: 5px !important;
+  transition: color 0.3s ease !important;
+  text-decoration: underline !important;
+  outline: none !important;
+}
+
+.link-btn:hover {
+  color: #000 !important;
+  outline: none !important;
+}
+
+.link-btn:focus {
+  outline: none !important;
+}
+
+/* Alerts - FORCE OVERRIDE */
+.auth-form .alert {
+  padding: 12px 15px !important;
+  border-radius: 15px !important;
+  margin-bottom: 20px !important;
+  font-size: 14px !important;
+  border: none !important;
+}
+
+.auth-form .alert-danger {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #dc3545 !important;
+  border-left: 3px solid #dc3545 !important;
+}
+
+.auth-form .alert-success {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #28a745 !important;
+  border-left: 3px solid #28a745 !important;
+}
+
+/* Responsive - FORCE OVERRIDE */
+@media (max-width: 768px) {
+  .auth-logo-corner {
+    width: 150px !important;
+    top: 15px !important;
+    left: 15px !important;
+  }
+
+  .auth-card {
+    padding: 50px 30px 30px 30px !important;
+    margin: 0 15px !important;
+    border-radius: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-logo-corner {
+    width: 120px !important;
+    top: 10px !important;
+    left: 10px !important;
+  }
+
+  .auth-card {
+    padding: 40px 25px 25px 25px !important;
+    border-radius: 15px !important;
+  }
+
+  .auth-form .form-control {
+    padding: 12px 15px !important;
+    font-size: 14px !important;
+  }
+
+  .btn-auth {
+    padding: 12px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Animation cho logo góc - FORCE OVERRIDE */
+.auth-logo-corner {
+  animation: logoCornerFloat 4s ease-in-out infinite !important;
+}
+
+@keyframes logoCornerFloat {
+
+  0%,
+  100% {
+    transform: translateY(0px) !important;
+  }
+
+  50% {
+    transform: translateY(-5px) !important;
+  }
+}
+
+/* Slide in animation cho form - FORCE OVERRIDE */
+.auth-card {
+  animation: slideInCenter 0.6s ease-out !important;
+}
+
+@keyframes slideInCenter {
+  from {
+    opacity: 0 !important;
+    transform: translateY(50px) scale(0.9) !important;
+  }
+
+  to {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+  }
+}
+
+/* FORCE OVERRIDE TẤT CẢ CONFLICTS CŨ */
+.login-page *,
+.signup-page * {
+  box-sizing: border-box !important;
+}
+
+.login-page .auth-card,
+.signup-page .auth-card {
+  background: #ffb3c1 !important;
+}
+
+.signup-page .auth-card {
+  background: #b3d9ff !important;
+}
+
+.login-page .btn-auth,
+.signup-page .btn-auth {
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+.login-page .btn-auth:hover,
+.signup-page .btn-auth:hover,
+.login-page .btn-auth:focus,
+.signup-page .btn-auth:focus,
+.login-page .btn-auth:active,
+.signup-page .btn-auth:active {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Hide tất cả elements cũ không cần thiết */
+.login-page .login-left,
+.login-page .login-right,
+.login-page .login-form-container,
+.login-page .login-logo,
+.signup-page .signup-left,
+.signup-page .signup-right,
+.signup-page .signup-form-container,
+.signup-page .signup-logo {
+  display: none !important;
+}
+
+/* Đảm bảo không có scroll bars */
+.login-page,
+.signup-page {
+  overflow: hidden !important;
+}
+
+/* Remove tất cả margins và paddings từ body khi auth pages */
+body:has(.login-page),
+body:has(.signup-page) {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }

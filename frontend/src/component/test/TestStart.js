@@ -1,231 +1,265 @@
-
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Form } from 'react-bootstrap';
-
-// Dữ liệu câu hỏi mẫu - sau này có thể lấy từ database
-const quizData = [
-  {
-    id: 1,
-    question: "What is the meaning of the word 'Con chó'?",
-    options: ["Cat", "Dog", "Cow", "Horse"],
-    correctAnswer: 1
-  },
-  {
-    id: 2,
-    question: "What is the meaning of the word 'Con mèo'?",
-    options: ["Dog", "Cat", "Bird", "Fish"],
-    correctAnswer: 1
-  },
-  {
-    id: 3,
-    question: "What is the meaning of the word 'Con gà'?",
-    options: ["Chicken", "Duck", "Goose", "Turkey"],
-    correctAnswer: 0
-  },
-  {
-    id: 4,
-    question: "What is the meaning of the word 'Con cá'?",
-    options: ["Bird", "Cat", "Fish", "Dog"],
-    correctAnswer: 2
-  },
-  {
-    id: 5,
-    question: "What is the meaning of the word 'Con chim'?",
-    options: ["Fish", "Bird", "Cat", "Dog"],
-    correctAnswer: 1
-  },
-  {
-    id: 6,
-    question: "What is the meaning of the word 'Con bò'?",
-    options: ["Horse", "Pig", "Cow", "Sheep"],
-    correctAnswer: 2
-  },
-  {
-    id: 7,
-    question: "What is the meaning of the word 'Con lợn'?",
-    options: ["Cow", "Pig", "Horse", "Sheep"],
-    correctAnswer: 1
-  },
-  {
-    id: 8,
-    question: "What is the meaning of the word 'Con vịt'?",
-    options: ["Duck", "Chicken", "Goose", "Turkey"],
-    correctAnswer: 0
-  },
-  {
-    id: 9,
-    question: "What is the meaning of the word 'Con ngựa'?",
-    options: ["Cow", "Pig", "Horse", "Sheep"],
-    correctAnswer: 2
-  },
-  {
-    id: 10,
-    question: "What is the meaning of the word 'Con cừu'?",
-    options: ["Horse", "Pig", "Cow", "Sheep"],
-    correctAnswer: 3
-  }
-];
+import { Container, Card, Button, Alert, Spinner, ProgressBar } from 'react-bootstrap';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import ApiService from '../../services/api';
 
 const TestStart = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const testId = searchParams.get('testId');
+
+  const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [timeLeft, setTimeLeft] = useState(180); // 3 phút = 180 giây
-  const [isFinished, setIsFinished] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [result, setResult] = useState(null);
 
-  // Timer countdown
   useEffect(() => {
-    if (timeLeft > 0 && !isFinished) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0) {
-      setIsFinished(true);
+    if (!testId) {
+      setError('Không tìm thấy bài test');
+      setLoading(false);
+      return;
     }
-  }, [timeLeft, isFinished]);
 
-  // Format time MM:SS
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+    const fetchQuestions = async () => {
+      try {
+        setLoading(true);
+        const data = await ApiService.getTestQuestions(testId);
 
-  const handleAnswerSelect = (questionIndex, answerIndex) => {
+        if (data.questions && data.questions.length > 0) {
+          setQuestions(data.questions);
+        } else {
+          setError('Bài test này chưa có câu hỏi');
+        }
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+        setError('Không thể tải câu hỏi. Vui lòng thử lại.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestions();
+  }, [testId]);
+
+  const handleAnswerSelect = (questionId, answerIndex) => {
     setSelectedAnswers({
       ...selectedAnswers,
-      [questionIndex]: answerIndex
+      [questionId]: answerIndex
     });
   };
 
-  const goToQuestion = (questionIndex) => {
-    setCurrentQuestion(questionIndex);
-  };
+  const handleSubmit = async () => {
+    try {
+      setSubmitting(true);
 
-  const handlePrevious = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+      const testData = {
+        testId: parseInt(testId),
+        answers: selectedAnswers,
+        userId: user?.id
+      };
+
+      const result = await ApiService.submitTest(testData);
+      setResult(result);
+    } catch (error) {
+      console.error('Error submitting test:', error);
+      setError('Không thể nộp bài. Vui lòng thử lại.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleNext = () => {
-    if (currentQuestion < quizData.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    }
-  };
+  const progress = questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
 
-  const handleFinish = () => {
-    setIsFinished(true);
-    // Tính điểm 
-  };
-
-  if (isFinished) {
-    let score = 0;
-    Object.keys(selectedAnswers).forEach(questionIndex => {
-      if (selectedAnswers[questionIndex] === quizData[questionIndex].correctAnswer) {
-        score++;
-      }
-    });
-
+  if (loading) {
     return (
-      <div className="test-container">
-        <Card className="result-card">
-          <Card.Body className="text-center">
-            <h2>Bài test hoàn thành!</h2>
-            <h3>Điểm số: {score}/{quizData.length}</h3>
-            <p>Tỷ lệ đúng: {((score / quizData.length) * 100).toFixed(1)}%</p>
-            <Button variant="primary" onClick={() => window.location.reload()}>
-              Làm lại
-            </Button>
-          </Card.Body>
-        </Card>
-      </div>
+      <Container className="mt-5">
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+          <div className="text-center">
+            <Spinner animation="border" variant="primary" style={{ width: '3rem', height: '3rem' }} />
+            <p className="mt-3">Đang tải câu hỏi...</p>
+          </div>
+        </div>
+      </Container>
     );
   }
 
-  const currentQuestionData = quizData[currentQuestion];
+  if (error) {
+    return (
+      <Container className="mt-5">
+        <Alert variant="danger" className="text-center">
+          <Alert.Heading>⚠️ Lỗi</Alert.Heading>
+          <p>{error}</p>
+          <Button variant="outline-primary" onClick={() => navigate('/test')}>
+            Quay về danh sách test
+          </Button>
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (result) {
+    const passed = result.percentage >= 70;
+    return (
+      <Container className="mt-5">
+        <Card className="text-center shadow">
+          <Card.Body className="p-5">
+            <div style={{ fontSize: '4rem', marginBottom: '20px' }}>
+              {passed ? '🎉' : '😅'}
+            </div>
+            <h2>{passed ? 'Chúc mừng!' : 'Cần cố gắng thêm!'}</h2>
+
+            <div className="my-4">
+              <h3 className={passed ? 'text-success' : 'text-warning'}>
+                {result.score}/{result.totalQuestions} câu đúng
+              </h3>
+              <h4 className={passed ? 'text-success' : 'text-warning'}>
+                Điểm: {result.percentage}%
+              </h4>
+            </div>
+
+            <p className="lead">
+              {passed
+                ? 'Bạn đã vượt qua bài test! Tiếp tục phát huy nhé!'
+                : 'Đừng nản lòng! Hãy ôn tập thêm và thử lại.'
+              }
+            </p>
+
+            <div className="d-flex gap-2 justify-content-center flex-wrap mt-4">
+              <Button variant="primary" onClick={() => navigate('/test')}>
+                📝 Làm bài test khác
+              </Button>
+              <Button variant="success" onClick={() => navigate('/topics')}>
+                📚 Học từ vựng
+              </Button>
+              <Button variant="outline-secondary" onClick={() => window.location.reload()}>
+                🔄 Làm lại bài này
+              </Button>
+            </div>
+          </Card.Body>
+        </Card>
+      </Container>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <Container className="mt-5">
+        <Alert variant="info" className="text-center">
+          <h5>📝 Bài test trống</h5>
+          <p>Bài test này chưa có câu hỏi nào.</p>
+          <Button variant="primary" onClick={() => navigate('/test')}>
+            Chọn bài test khác
+          </Button>
+        </Alert>
+      </Container>
+    );
+  }
+
+  const question = questions[currentQuestion];
 
   return (
-    <div className="test-container">
-      <div className="test-layout">
-        {/* Main Question Area */}
-        <div className="question-area">
-          <Card>
-            <Card.Header>
-              <h5>Question {currentQuestion + 1}</h5>
-            </Card.Header>
-            <Card.Body>
-              <h6 className="question-text">{currentQuestionData.question}</h6>
-              <Form>
-                {currentQuestionData.options.map((option, index) => (
-                  <Form.Check
-                    key={index}
-                    type="radio"
-                    id={`q${currentQuestion}-option${index}`}
-                    name={`question${currentQuestion}`}
-                    label={option}
-                    checked={selectedAnswers[currentQuestion] === index}
-                    onChange={() => handleAnswerSelect(currentQuestion, index)}
-                    className="option-item"
-                  />
-                ))}
-              </Form>
-            </Card.Body>
-          </Card>
-
-          {/* Navigation Buttons */}
-          <div className="navigation-buttons">
-            <Button 
-              variant="secondary" 
-              onClick={handlePrevious}
-              disabled={currentQuestion === 0}
-            >
-              Previous
-            </Button>
-            <Button 
-              variant="primary" 
-              onClick={handleNext}
-              disabled={currentQuestion === quizData.length - 1}
-            >
-              Next
-            </Button>
-            <Button 
-              variant="warning" 
-              onClick={handleFinish}
-            >
-              Finish
-            </Button>
-          </div>
+    <Container className="mt-4">
+      {/* Progress */}
+      <div className="mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <h5 className="mb-0">📝 Bài Test</h5>
+          <span className="badge bg-primary">
+            {currentQuestion + 1}/{questions.length}
+          </span>
         </div>
-
-        {/* Sidebar */}
-        <div className="test-sidebar">
-          {/* Timer */}
-          <Card className="timer-card">
-            <Card.Body className="text-center">
-              <h4 className="timer">{formatTime(timeLeft)}</h4>
-            </Card.Body>
-          </Card>
-
-          {/* Question Navigation */}
-          <Card className="question-nav-card">
-            <Card.Body>
-              <div className="question-grid">
-                {quizData.map((_, index) => (
-                  <button
-                    key={index}
-                    className={`question-btn ${index === currentQuestion ? 'active' : ''} ${
-                      selectedAnswers[index] !== undefined ? 'answered' : ''
-                    }`}
-                    onClick={() => goToQuestion(index)}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
-            </Card.Body>
-          </Card>
-        </div>
+        <ProgressBar now={progress} label={`${Math.round(progress)}%`} />
       </div>
-    </div>
+
+      {/* Question */}
+      <Card className="shadow">
+        <Card.Header className="bg-light">
+          <h5 className="mb-0">Câu {currentQuestion + 1}/{questions.length}</h5>
+        </Card.Header>
+        <Card.Body className="p-4">
+          <h4 className="mb-4">{question?.question}</h4>
+
+          <div className="mt-3">
+            {question?.options?.map((option, index) => (
+              <div key={index} className="mb-3">
+                <div className="form-check">
+                  <input
+                    type="radio"
+                    id={`option-${index}`}
+                    name={`question-${question.id}`}
+                    value={index}
+                    checked={selectedAnswers[question.id] === index}
+                    onChange={() => handleAnswerSelect(question.id, index)}
+                    className="form-check-input"
+                  />
+                  <label htmlFor={`option-${index}`} className="form-check-label">
+                    <strong>{String.fromCharCode(65 + index)}.</strong> {option}
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card.Body>
+
+        <Card.Footer className="d-flex justify-content-between bg-light">
+          <Button
+            variant="outline-secondary"
+            disabled={currentQuestion === 0}
+            onClick={() => setCurrentQuestion(currentQuestion - 1)}
+          >
+            ← Câu trước
+          </Button>
+
+          {currentQuestion === questions.length - 1 ? (
+            <Button
+              variant="success"
+              onClick={handleSubmit}
+              disabled={submitting || Object.keys(selectedAnswers).length === 0}
+            >
+              {submitting ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  Đang nộp bài...
+                </>
+              ) : (
+                '✅ Nộp bài'
+              )}
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              onClick={() => setCurrentQuestion(currentQuestion + 1)}
+            >
+              Câu tiếp →
+            </Button>
+          )}
+        </Card.Footer>
+      </Card>
+
+      {/* Answer Summary */}
+      <Card className="mt-3">
+        <Card.Body>
+          <h6>Trạng thái trả lời:</h6>
+          <div className="d-flex flex-wrap gap-2">
+            {questions.map((_, index) => (
+              <Button
+                key={index}
+                variant={selectedAnswers[questions[index].id] !== undefined ? "success" : "outline-secondary"}
+                size="sm"
+                onClick={() => setCurrentQuestion(index)}
+                className={currentQuestion === index ? "border-primary border-2" : ""}
+              >
+                {index + 1}
+              </Button>
+            ))}
+          </div>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };
 

@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
-const validateRegister = require('../middlewares/validateRegister');
+const { register, login, verify } = require('../controllers/authController');
 
-router.post('/google-login', authController.googleLogin);
-router.post('/register', validateRegister, authController.register);
-router.post('/verify', authController.verify);
+// ĐẢM BẢO CÁC CONTROLLER FUNCTION TỒN TẠI
+router.post('/register', register);
+router.post('/login', login);
+router.post('/verify', verify);
 
 module.exports = router;

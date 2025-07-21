@@ -1,21 +1,45 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const sequelize = require('./models');
-const Question = require('./models/Question');
-const Result = require('./models/Result');
-const Test = require('./models/Test');
-const questionRoutes = require('./routes/questionRoute');
-const resultRoutes = require('./routes/resultRoute');
+const { sequelize } = require('./models');
+
+// Import routes
+const testRoutes = require('./routes/testRoutes');
 
 const app = express();
-app.use(cors());
+const PORT = process.env.PORT || 5006;
+
+// Middleware
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true
+}));
 app.use(express.json());
 
-app.use('/questions', questionRoutes);
-app.use('/results', resultRoutes);
+// Routes
 app.use('/tests', testRoutes);
 
-sequelize.sync().then(() => {
-    app.listen(process.env.PORT, () => console.log(`Test service on port ${process.env.PORT}`));
+// Health check
+app.get('/health', (req, res) => {
+    res.json({
+        service: 'test-service',
+        status: 'healthy',
+        timestamp: new Date().toISOString()
+    });
 });
+
+// Database connection
+sequelize.authenticate()
+    .then(() => {
+        console.log('📊 Test Service DB connected');
+        return sequelize.sync({ alter: true });
+    })
+    .then(() => {
+        console.log('📊 Test Service DB synced');
+        app.listen(PORT, () => {
+            console.log(`📊 Test Service running on port ${PORT}`);
+        });
+    })
+    .catch(err => {
+        console.error('❌ Test Service DB error:', err);
+    });
