@@ -147,7 +147,7 @@ const TestStart = () => {
     <div className="test-container">
       <div className="test-layout">
         {/* Main Question Area */}
-        <div className="question-area">
+        <div className="question-area" >
           <Card>
             <Card.Header>
               <h5>Question {currentQuestion + 1}</h5>
