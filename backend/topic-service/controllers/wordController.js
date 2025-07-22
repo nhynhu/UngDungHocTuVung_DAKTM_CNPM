@@ -1,16 +1,12 @@
 const { Topic, Word } = require('../models');
 const { Op } = require('sequelize');
 
-/**
- * Lấy từ vựng theo topic (cho Flashcards)
- */
 exports.getWordsByTopic = async (req, res) => {
     try {
         const { topicId } = req.params;
 
         console.log(`🔍 Getting words for topic: ${topicId}`);
 
-        // SỬA LỖI: Không dùng include để tránh alias conflict
         const words = await Word.findAll({
             where: { TopicId: topicId },
             order: [['english', 'ASC']]
@@ -18,7 +14,6 @@ exports.getWordsByTopic = async (req, res) => {
 
         console.log(`📝 Found ${words.length} words for topic ${topicId}`);
 
-        // Format cho frontend
         const formattedWords = words.map(word => ({
             id: word.id,
             english: word.english,
@@ -36,9 +31,6 @@ exports.getWordsByTopic = async (req, res) => {
     }
 };
 
-/**
- * Search API cho SearchBox component
- */
 exports.searchWords = async (req, res) => {
     try {
         const searchTerm = req.query.q ? req.query.q.trim() : '';
@@ -49,7 +41,7 @@ exports.searchWords = async (req, res) => {
         }
 
         let results = [];
-        // Search topics
+        
         if (type === 'all' || type === 'topics') {
             const topics = await Topic.findAll({
                 where: {
@@ -58,7 +50,7 @@ exports.searchWords = async (req, res) => {
                         { nameVi: { [Op.like]: `%${searchTerm}%` } }
                     ]
                 },
-                include: [{ model: Word, as: 'words', attributes: ['id'] }] // SỬA: Thêm as: 'words'
+                include: [{ model: Word, as: 'words', attributes: ['id'] }]
             });
 
             const topicResults = topics.map(topic => ({
@@ -68,13 +60,12 @@ exports.searchWords = async (req, res) => {
                 description: `Chủ đề ${topic.description || topic.name}`,
                 wordCount: topic.words?.length || 0,
                 type: 'topic',
-                link: `/lessons?topicId=${topic.id}` // Thêm link cho FE
+                link: `/lessons?topicId=${topic.id}`
             }));
 
             results.push(...topicResults);
         }
 
-        // Search vocabulary
         if (type === 'all' || type === 'vocabulary') {
             const words = await Word.findAll({
                 where: {
@@ -83,7 +74,7 @@ exports.searchWords = async (req, res) => {
                         { vietnamese: { [Op.like]: `%${searchTerm}%` } }
                     ]
                 },
-                include: [{ model: Topic, as: 'topic', attributes: ['name', 'nameVi'] }], // SỬA LỖI: Thêm as: 'topic'
+                include: [{ model: Topic, as: 'topic', attributes: ['name', 'nameVi'] }],
                 limit: 20
             });
 
@@ -92,9 +83,9 @@ exports.searchWords = async (req, res) => {
                 english: word.english,
                 vietnamese: word.vietnamese,
                 topic: word.topic?.nameVi || word.topic?.name || 'Unknown',
-                topicId: word.TopicId, // THÊM DÒNG NÀY
+                topicId: word.TopicId,
                 type: 'vocabulary',
-                link: `/flashcard?wordId=${word.id}&topicId=${word.TopicId}` // THÊM topicId vào link
+                link: `/flashcard?wordId=${word.id}&topicId=${word.TopicId}`
             }));
 
             results.push(...vocabResults);
@@ -107,62 +98,6 @@ exports.searchWords = async (req, res) => {
     }
 };
 
-/**
- * Thêm word mới (Admin only)
- */
-exports.addWord = async (req, res) => {
-    try {
-        const { english, vietnamese, TopicId } = req.body;
-
-        // Check if topic exists
-        const topic = await Topic.findByPk(TopicId);
-        if (!topic) {
-            return res.status(404).json({ error: 'Topic not found' });
-        }
-
-        // Check if word already exists in this topic
-        const exists = await Word.findOne({
-            where: { english, TopicId }
-        });
-        if (exists) {
-            return res.status(409).json({ error: 'Word already exists in this topic' });
-        }
-
-        const word = await Word.create({ english, vietnamese, TopicId });
-
-        res.status(201).json({
-            id: word.id,
-            english: word.english,
-            vietnamese: word.vietnamese,
-            message: 'Word added successfully'
-        });
-    } catch (err) {
-        console.error('Add word error:', err);
-        res.status(500).json({ error: err.message });
-    }
-};
-
-/**
- * Xóa word (Admin only)
- */
-exports.deleteWord = async (req, res) => {
-    try {
-        const word = await Word.findByPk(req.params.id);
-        if (!word) {
-            return res.status(404).json({ error: 'Word not found' });
-        }
-
-        await word.destroy();
-        res.json({ message: 'Word deleted successfully' });
-    } catch (err) {
-        console.error('Delete word error:', err);
-        res.status(500).json({ error: err.message });
-    }
-};
-
-/**
- * Health check
- */
 exports.healthCheck = (req, res) => {
     res.json({
         service: 'topic-service',

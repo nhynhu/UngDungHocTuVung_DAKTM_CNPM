@@ -9,7 +9,6 @@ exports.register = async (req, res) => {
     console.log('📝 Registration attempt:', { email });
 
     try {
-        // Validation
         if (!email || !password || !fullname) {
             return res.status(400).json({ message: 'All fields are required' });
         }
@@ -17,21 +16,17 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'Password must be at least 6 characters' });
         }
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        // Gọi user-service để tạo user
         const response = await axios.post(
             `${USER_SERVICE_URL}/users`,
             { email: email.toLowerCase().trim(), password: hashedPassword, fullname: fullname.trim() },
             { timeout: 10000 }
         );
 
-        // Lấy dữ liệu đúng từ response.data (không cần .user)
         const userData = response.data;
 
         if (!userData || !userData.id || !userData.email) {
-            // Nếu user-service trả về dữ liệu không hợp lệ
             console.error('❌ Invalid user data from user-service:', response.data);
             return res.status(500).json({ message: 'User service returned invalid data.' });
         }
@@ -49,33 +44,26 @@ exports.register = async (req, res) => {
     } catch (error) {
         console.error('❌ Registration Error:', error.message);
 
-        // Nếu user-service trả lỗi (ví dụ 409)
         if (error.response) {
             return res
                 .status(error.response.status)
                 .json({ message: error.response.data.message || 'Registration failed.' });
         }
 
-        // Nếu không kết nối được hoặc timeout
         if (error.code === 'ECONNABORTED' || error.code === 'ECONNREFUSED') {
             return res.status(503).json({ message: 'User service unavailable. Please try again later.' });
         }
 
-        // Lỗi khác
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
 
-/**
- * Login user
- */
 exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
         console.log('🔐 Login attempt:', { email });
 
-        // Validation
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
@@ -83,7 +71,6 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Email format validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return res.status(400).json({
@@ -92,7 +79,6 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Get user from user-service
         const userResponse = await axios.get(`${USER_SERVICE_URL}/users/email/${email.toLowerCase().trim()}`, {
             timeout: 15000,
             headers: {
@@ -102,7 +88,6 @@ exports.login = async (req, res) => {
 
         const user = userResponse.data;
 
-        // Verify password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             console.log('❌ Password mismatch for:', email);
@@ -112,7 +97,6 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Generate JWT token
         const payload = {
             id: user.id,
             email: user.email,
@@ -125,11 +109,8 @@ exports.login = async (req, res) => {
             { expiresIn: process.env.JWT_EXPIRE || '1d' }
         );
 
-        // Remove password from response
         delete user.password;
 
-
-        // Lấy số bài test đã làm từ user-service
         let testsTaken = 0;
         try {
             const testsRes = await axios.get(`${USER_SERVICE_URL}/users/${user.id}/tests/count`, { timeout: 10000 });
@@ -138,7 +119,6 @@ exports.login = async (req, res) => {
             console.error('❌ Không lấy được số bài test đã làm:', err.message);
         }
 
-        // Trả về đầy đủ thông tin user cho FE
         const userInfo = {
             id: user.id,
             email: user.email,
@@ -159,7 +139,6 @@ exports.login = async (req, res) => {
     } catch (error) {
         console.error('❌ Login error:', error.message);
 
-        // Handle different error types
         if (error.code === 'ECONNREFUSED') {
             return res.status(503).json({
                 success: false,
@@ -181,9 +160,6 @@ exports.login = async (req, res) => {
     }
 };
 
-/**
- * Health check
- */
 exports.healthCheck = (req, res) => {
     res.json({
         service: 'auth-service',

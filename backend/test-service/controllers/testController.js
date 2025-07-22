@@ -3,9 +3,6 @@ const Question = require('../models/Question');
 const Result = require('../models/Result');
 const { sequelize } = require('../models');
 
-/**
- * Get all tests - SỬA LỖI: Thêm trường description vào model
- */
 exports.getAllTests = async (req, res) => {
     try {
         console.log('📝 Getting all tests...');
@@ -44,18 +41,12 @@ exports.getAllTests = async (req, res) => {
     }
 };
 
-/**
- * Get test questions for a topic - KHÔNG THAY ĐỔI
- */
 exports.getTest = async (req, res) => {
     try {
-        // Ưu tiên testId, nếu không có thì dùng topicId
-
         let testId = req.params.testId;
         let topicId = req.params.topicId;
         const { limit = 10 } = req.query;
 
-        // Nếu testId có dạng '2:1' thì tách ra
         if (testId && typeof testId === 'string' && testId.includes(':')) {
             const parts = testId.split(':');
             testId = parts[0];
@@ -70,13 +61,11 @@ exports.getTest = async (req, res) => {
                 attributes: ['id', 'content', 'options']
             });
 
-            // Nếu có topicId, lọc tiếp theo topicId
             let filteredQuestions = questions;
             if (topicId) {
                 filteredQuestions = questions.filter(q => q.topicId === parseInt(topicId));
             }
 
-            // Luôn trả về mảng, không trả về lỗi 404 cho frontend
             return res.json({
                 testId: parseInt(testId),
                 topicId: topicId ? parseInt(topicId) : undefined,
@@ -100,7 +89,6 @@ exports.getTest = async (req, res) => {
                 attributes: ['id', 'content', 'options']
             });
 
-            // Luôn trả về mảng, không trả về lỗi 404 cho frontend
             return res.json({
                 topicId: parseInt(topicId),
                 questions: Array.isArray(questions) ? questions : [],
@@ -119,17 +107,12 @@ exports.getTest = async (req, res) => {
     }
 };
 
-/**
- * Submit test results - KHÔNG THAY ĐỔI
- */
 exports.submitTest = async (req, res) => {
     try {
         const { answers, testId, timeTaken } = req.body;
-        // Nếu dùng xác thực thì lấy userId từ req.user, nếu không thì lấy từ req.body
         const userId = req.user?.id || req.body.userId;
 
         console.log(`📊 Submitting test for user ${userId}, testId ${testId}`);
-
 
         if (!testId || !answers || !Array.isArray(answers)) {
             return res.status(400).json({
@@ -137,7 +120,6 @@ exports.submitTest = async (req, res) => {
             });
         }
 
-        // Lấy tất cả câu hỏi của test, lấy cả options để so sánh index
         const questions = await Question.findAll({
             where: { TestId: parseInt(testId) },
             attributes: ['id', 'answer', 'options']
@@ -146,12 +128,10 @@ exports.submitTest = async (req, res) => {
         let score = 0;
         const totalQuestions = questions.length;
 
-        // Chuẩn hóa answers thành mảng object [{questionId, selectedOption}]
         let normalizedAnswers = [];
         if (answers.length > 0 && typeof answers[0] === 'object' && answers[0].questionId !== undefined) {
             normalizedAnswers = answers;
         } else if (answers.length === questions.length) {
-            // Nếu answers là mảng số, ánh xạ theo thứ tự câu hỏi
             normalizedAnswers = questions.map((q, idx) => ({
                 questionId: q.id,
                 selectedOption: answers[idx]
@@ -169,21 +149,13 @@ exports.submitTest = async (req, res) => {
                 } else if (typeof answer.selectedOption === 'string') {
                     userValue = answer.selectedOption;
                 }
-                // Log chi tiết cho từng câu hỏi
-                console.log(`QID: ${question.id}`);
-                console.log(`Options:`, optionsArr);
-                console.log(`Answer index: ${question.answer}`);
-                console.log(`Correct value: ${correctValue}`);
-                console.log(`User selected index: ${answer.selectedOption}`);
-                console.log(`User value: ${userValue}`);
-                // Chấm điểm
+
                 if (userValue === correctValue) {
                     score++;
                 }
             }
         }
 
-        // Lưu kết quả vào model Result, luôn có timeTaken và pass
         const passed = score >= Math.ceil(totalQuestions * 0.7);
         const result = await Result.create({
             userId,
@@ -212,12 +184,9 @@ exports.submitTest = async (req, res) => {
     }
 };
 
-/**
- * Health check
- */
 exports.healthCheck = (req, res) => {
     res.json({
-        service: 'test-controller',
+        service: 'test-service',
         status: 'healthy',
         timestamp: new Date().toISOString()
     });

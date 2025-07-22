@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer');
 const { getEmailTemplate } = require('../utils/emailTemplates');
 
-// Cấu hình transporter
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -10,9 +9,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-/**
- * Send verification email with template
- */
 exports.sendVerificationEmail = async (req, res) => {
     const { to, username, verificationLink } = req.body;
 
