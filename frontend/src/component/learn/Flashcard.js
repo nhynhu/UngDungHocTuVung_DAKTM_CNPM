@@ -7,6 +7,7 @@ const Flashcard = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const topicId = searchParams.get('topicId');
+  const wordId = searchParams.get('wordId'); // THÊM DÒNG NÀY
 
   const [words, setWords] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -33,6 +34,12 @@ const Flashcard = () => {
 
         setTopicInfo(topicData);
         setWords(wordsData);
+
+        // Nếu có wordId, set flashcard về đúng vị trí từ đó
+        if (wordId) {
+          const idx = wordsData.findIndex(w => String(w.id) === String(wordId));
+          if (idx >= 0) setCurrentIndex(idx);
+        }
       } catch (error) {
         console.error('Error fetching flashcard data:', error);
         setError('Không thể tải flashcard. Vui lòng thử lại.');
@@ -42,7 +49,7 @@ const Flashcard = () => {
     };
 
     fetchData();
-  }, [topicId]);
+  }, [topicId, wordId]);
 
   const handleNext = () => {
     if (currentIndex < words.length - 1) {

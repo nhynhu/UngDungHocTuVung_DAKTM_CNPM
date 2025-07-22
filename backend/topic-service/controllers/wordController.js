@@ -1,5 +1,4 @@
-const Word = require('../models/Word');
-const Topic = require('../models/Topic');
+const { Topic, Word } = require('../models');
 const { Op } = require('sequelize');
 
 /**
@@ -42,15 +41,14 @@ exports.getWordsByTopic = async (req, res) => {
  */
 exports.searchWords = async (req, res) => {
     try {
-        const { q, type = 'all' } = req.query;
+        const searchTerm = req.query.q ? req.query.q.trim() : '';
+        const type = req.query.type || 'all';
 
-        if (!q || q.trim() === '') {
+        if (!searchTerm) {
             return res.json([]);
         }
 
         let results = [];
-        const searchTerm = q.toLowerCase();
-
         // Search topics
         if (type === 'all' || type === 'topics') {
             const topics = await Topic.findAll({
@@ -60,7 +58,7 @@ exports.searchWords = async (req, res) => {
                         { nameVi: { [Op.like]: `%${searchTerm}%` } }
                     ]
                 },
-                include: [{ model: Word, attributes: ['id'] }]
+                include: [{ model: Word, as: 'words', attributes: ['id'] }] // SỬA: Thêm as: 'words'
             });
 
             const topicResults = topics.map(topic => ({
@@ -68,8 +66,9 @@ exports.searchWords = async (req, res) => {
                 name: topic.name,
                 nameVi: topic.nameVi || topic.name,
                 description: `Chủ đề ${topic.description || topic.name}`,
-                wordCount: topic.Words?.length || 0,
-                type: 'topic'
+                wordCount: topic.words?.length || 0,
+                type: 'topic',
+                link: `/lessons?topicId=${topic.id}` // Thêm link cho FE
             }));
 
             results.push(...topicResults);
@@ -84,7 +83,7 @@ exports.searchWords = async (req, res) => {
                         { vietnamese: { [Op.like]: `%${searchTerm}%` } }
                     ]
                 },
-                include: [{ model: Topic, attributes: ['name', 'nameVi'] }],
+                include: [{ model: Topic, as: 'topic', attributes: ['name', 'nameVi'] }], // SỬA LỖI: Thêm as: 'topic'
                 limit: 20
             });
 
@@ -92,17 +91,19 @@ exports.searchWords = async (req, res) => {
                 id: word.id,
                 english: word.english,
                 vietnamese: word.vietnamese,
-                topic: word.Topic?.nameVi || word.Topic?.name || 'Unknown',
-                type: 'vocabulary'
+                topic: word.topic?.nameVi || word.topic?.name || 'Unknown',
+                topicId: word.TopicId, // THÊM DÒNG NÀY
+                type: 'vocabulary',
+                link: `/flashcard?wordId=${word.id}&topicId=${word.TopicId}` // THÊM topicId vào link
             }));
 
             results.push(...vocabResults);
         }
 
-        res.json(results.slice(0, 10));
+        res.json(results);
     } catch (err) {
-        console.error('Search words error:', err);
-        res.status(500).json({ error: err.message });
+        console.error('❌ SearchWords error:', err);
+        res.status(500).json({ error: 'Internal server error', message: err.message });
     }
 };
 

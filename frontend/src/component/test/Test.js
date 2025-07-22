@@ -55,7 +55,7 @@ const Test = () => {
   return (
     <Container className="mt-4">
       <div className="text-center mb-4">
-        <h2>📝 Chọn bài test để làm</h2>
+        <h2>Chọn bài test để làm</h2>
         <p className="text-muted">Có {tests.length} bài test để kiểm tra kiến thức</p>
       </div>
 

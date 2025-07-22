@@ -53,19 +53,11 @@ const SearchBox = () => {
         }
     };
 
+    // Thêm hàm điều hướng khi click
     const handleSelectResult = (result) => {
-        if (!user) {
-            setShowAuthModal(true);
-            return;
+        if (result.link) {
+            navigate(result.link);
         }
-
-        if (result.type === 'topic') {
-            navigate(`/lessons?topicId=${result.id}`);
-        } else {
-            navigate(`/search?q=${encodeURIComponent(result.english)}`);
-        }
-        setShowResults(false);
-        setSearchQuery('');
     };
 
     const handleInputFocus = () => {

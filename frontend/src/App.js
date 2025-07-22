@@ -11,7 +11,6 @@ import TestStart from './component/test/TestStart';
 import SearchPage from './component/search/SearchPage';
 import Login from './component/account/Login';
 import Signup from './component/account/Signup';
-import Profile from './component/account/Profile';
 import ProtectedRoute from './component/auth/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -121,14 +120,6 @@ const AppLayout = () => {
               element={
                 <ProtectedRoute>
                   <SearchPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
                 </ProtectedRoute>
               }
             />

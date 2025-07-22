@@ -13,4 +13,10 @@ const sequelize = new Sequelize(
     }
 );
 
-module.exports = { sequelize };   // <-- export thành { sequelize }
+const Topic = require('./Topic')(sequelize);
+const Word = require('./Word')(sequelize);
+
+Topic.hasMany(Word, { foreignKey: 'TopicId', as: 'words' });
+Word.belongsTo(Topic, { foreignKey: 'TopicId', as: 'topic' });
+
+module.exports = { sequelize, Topic, Word };

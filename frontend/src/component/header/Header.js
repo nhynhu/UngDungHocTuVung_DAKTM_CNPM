@@ -89,7 +89,6 @@ const Header = () => {
                             ) : (
                                 <>
                                     <NavDropdown title="Setting" id="navbarScrollingDropdown">
-                                        <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
                                         <NavDropdown.Divider />
                                         <NavDropdown.Item href="#action5">Log out</NavDropdown.Item>
                                     </NavDropdown>

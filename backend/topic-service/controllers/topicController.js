@@ -1,5 +1,4 @@
-const Topic = require('../models/Topic');
-const Word = require('../models/Word');
+const { Topic, Word } = require('../models');
 const path = require('path');
 const fs = require('fs');
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Container, Card, Button, Alert, Spinner, ProgressBar } from 'react-bootstrap';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -17,6 +17,8 @@ const TestStart = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
+  const [seconds, setSeconds] = useState(0);
+  const timerRef = useRef();
 
   useEffect(() => {
     if (!testId) {
@@ -41,6 +43,15 @@ const TestStart = () => {
     fetchQuestions();
   }, [testId]);
 
+  useEffect(() => {
+    // Bắt đầu đếm thời gian khi vào bài test
+    timerRef.current = setInterval(() => {
+      setSeconds(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(timerRef.current);
+  }, []);
+
   const handleAnswerSelect = (questionId, answerIndex) => {
     setSelectedAnswers({
       ...selectedAnswers,
@@ -59,7 +70,8 @@ const TestStart = () => {
       const response = await ApiService.submitTest({
         testId,
         userId: user?.id,
-        answers: answersArray
+        answers: answersArray,
+        timeTaken: seconds // gửi thời gian làm bài
       });
       setResult(response);
     } catch (error) {
@@ -169,15 +181,11 @@ const TestStart = () => {
 
   return (
     <Container className="mt-4">
-      {/* Progress */}
-      <div className="mb-4">
-        <div className="d-flex justify-content-between align-items-center mb-2">
-          <h5 className="mb-0">📝 Bài Test</h5>
-          <span className="badge bg-primary">
-            {currentQuestion + 1}/{questions.length}
-          </span>
-        </div>
-        <ProgressBar now={progress} label={`${Math.round(progress)}%`} />
+      {/* Timer */}
+      <div className="mb-4 text-center">
+        <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+          ⏰ Thời gian: {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
+        </span>
       </div>
 
       {/* Question */}

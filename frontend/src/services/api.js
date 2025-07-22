@@ -79,7 +79,7 @@ const ApiService = {
 
     // Words
     getWordsByTopic: (topicId) => makeRequest(`/words/topic/${topicId}`),
-    searchWords: (query) => makeRequest(`/words/search?q=${query}`),
+    searchWords: (query, type = 'all') => makeRequest(`/words/searchWords?q=${encodeURIComponent(query)}&type=${type}`),
 
     // Tests
     getAllTests: () => makeRequest('/tests'),

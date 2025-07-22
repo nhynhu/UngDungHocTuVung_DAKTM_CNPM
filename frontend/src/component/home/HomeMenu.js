@@ -78,15 +78,6 @@ const HomeMenu = () => {
                             Test
                         </MenuItem>
 
-                        {/* Profile - Chỉ hiện khi đã login */}
-                        {user && (
-                            <MenuItem
-                                icon={<img src="/image/profile-icon.png" alt="Profile" style={{ width: '32px' }} />}
-                                component={<NavLink to="/profile" className="nav-link" />}
-                            >
-                                Profile
-                            </MenuItem>
-                        )}
                     </Menu>
 
                     {/* Pink Panther mascot ở bottom */}

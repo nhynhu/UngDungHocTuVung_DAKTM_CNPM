@@ -3,10 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { sequelize } = require('./models');
-const Topic = require('./models/Topic');
-const Word = require('./models/Word');
 const topicRoutes = require('./routes/topicRoutes');
 const wordRoutes = require('./routes/wordRoutes');
+const { Topic, Word } = require('./models');
 
 const app = express();
 // SỬA LỖI: Đảm bảo cổng luôn là 5005 nếu không có biến môi trường
@@ -55,19 +54,9 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Define associations - SỬA LỖI: Không tạo thêm TopicId vì đã có sẵn
-Topic.hasMany(Word, {
-    foreignKey: {
-        name: 'TopicId',
-        allowNull: false
-    },
-    as: 'words'
-});
-
-Word.belongsTo(Topic, {
-    foreignKey: 'TopicId',
-    as: 'topic'
-});
+// // Define associations - SỬA LỖI: Không tạo thêm TopicId vì đã có sẵn
+// Topic.hasMany(Word, { foreignKey: 'TopicId', as: 'words' });
+// Word.belongsTo(Topic, { foreignKey: 'TopicId', as: 'topic' });
 
 // Database connection với retry logic
 const connectDB = async () => {
@@ -97,3 +86,4 @@ const connectDB = async () => {
 };
 
 connectDB();
+
