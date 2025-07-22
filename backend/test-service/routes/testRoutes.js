@@ -22,13 +22,11 @@ const healthCheck = (req, res) => {
 // ==================== ROUTES ====================
 
 // SỬA LỖI: Route ROOT "/" để lấy tất cả tests (match với proxy path rewrite)
-router.get('/tests', testController.getAllTests); // /tests -> getAllTests
-
-// Submit test results  
-router.post('/submit', submitTest);
-
-// Get test questions for a specific topic
-router.get('/:topicId', authenticateToken, getTest);
+router.get('/tests', testController.getAllTests);
+router.get('/tests/:testId', testController.getTest); // Đặt lên trước
+router.post('/tests/submit', testController.submitTest); // Thêm dòng này
+router.post('/submit', testController.submitTest); // Giữ lại để không ảnh hưởng chức năng cũ
+router.get('/:topicId', authenticateToken, testController.getTest);
 
 // Health check route
 router.get('/health', healthCheck);

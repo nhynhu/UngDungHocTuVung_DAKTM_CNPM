@@ -78,8 +78,11 @@ app.use('/api/topics', createProxyMiddleware({
 
 // Test service proxy
 app.use('/api/tests', createProxyMiddleware({
-    target: process.env.TEST_SERVICE_URL || 'http://test-service:5006',
-    pathRewrite: { '^/api/tests': '/tests' },
+    target: TEST_SERVICE_URL,
+    pathRewrite: (path, req) => {
+        // Giữ nguyên /api/tests, /api/tests/ và /api/tests/abc -> /tests, /tests/, /tests/abc
+        return path.replace(/^\/api\/tests(\/|$)/, '/tests$1');
+    },
     ...proxyOptions
 }));
 

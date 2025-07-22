@@ -13,7 +13,9 @@ const Result = sequelize.define('Result', {
             model: 'Tests',
             key: 'id'
         }
-    }
+    },
+    timeTaken: { type: DataTypes.INTEGER, allowNull: false },
+    pass: { type: DataTypes.BOOLEAN, allowNull: true }
 });
 
 module.exports = Result;

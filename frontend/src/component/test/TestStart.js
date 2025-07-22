@@ -28,8 +28,8 @@ const TestStart = () => {
     const fetchQuestions = async () => {
       try {
         setLoading(true);
-        const data = await ApiService.getTestQuestions(testId);
-        setQuestions(data);
+        const data = await ApiService.getQuestionsByTest(testId);
+        setQuestions(Array.isArray(data.questions) ? data.questions : []);
       } catch (error) {
         console.error('Error fetching questions:', error);
         setError('Không thể tải câu hỏi. Vui lòng thử lại.');
@@ -51,15 +51,27 @@ const TestStart = () => {
   const handleSubmit = async () => {
     try {
       setSubmitting(true);
+      // Đảm bảo answers là mảng số (index), đúng thứ tự câu hỏi
+      const answersArray = questions.map(q => {
+        // Nếu người dùng chưa chọn thì null
+        if (selectedAnswers[q.id] === undefined || selectedAnswers[q.id] === null) return null;
+        // Luôn gửi index theo mảng options đã nhận từ BE
+        return selectedAnswers[q.id];
+      });
       const response = await ApiService.submitTest({
         testId,
         userId: user?.id,
-        answers: selectedAnswers
+        answers: answersArray
       });
       setResult(response);
     } catch (error) {
+      // Hiển thị lỗi chi tiết hơn
       console.error('Error submitting test:', error);
-      setError('Không thể nộp bài. Vui lòng thử lại.');
+      if (error?.response?.status === 404) {
+        setError('Không tìm thấy endpoint submit. Kiểm tra lại đường dẫn backend hoặc proxy.');
+      } else {
+        setError('Không thể nộp bài. Vui lòng thử lại.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -153,6 +165,9 @@ const TestStart = () => {
   }
 
   const question = questions[currentQuestion];
+  const options = Array.isArray(question?.options) ? question.options : JSON.parse(question.options || '[]');
+
+  const answersArray = questions.map(q => selectedAnswers[q.id] ?? null);
 
   return (
     <Container className="mt-4">
@@ -176,7 +191,7 @@ const TestStart = () => {
           <h4 className="mb-4">{question?.content}</h4>
 
           <div className="mt-3">
-            {question?.options?.map((option, index) => (
+            {options?.map((option, index) => (
               <div key={index} className="mb-3">
                 <div className="form-check">
                   <input

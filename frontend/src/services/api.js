@@ -83,7 +83,7 @@ const ApiService = {
 
     // Tests
     getAllTests: () => makeRequest('/tests'),
-    getTestQuestions: (testId) => makeRequest(`/tests/${testId}`),
+    getQuestionsByTest: (testId) => makeRequest(`/tests/${testId}`),
     submitTest: (submission) => makeRequest('/tests/submit', 'POST', submission),
 
     // User

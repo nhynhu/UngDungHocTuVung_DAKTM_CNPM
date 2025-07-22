@@ -115,12 +115,6 @@ const Lesson = () => {
               Luyện tập Flashcard
             </Button>
             <Button
-              variant="success"
-              onClick={() => navigate(`/test?topicId=${topicId}`)}
-            >
-              Làm bài test
-            </Button>
-            <Button
               variant="outline-secondary"
               onClick={() => navigate('/topics')}
             >

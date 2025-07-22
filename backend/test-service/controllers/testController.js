@@ -49,37 +49,66 @@ exports.getAllTests = async (req, res) => {
  */
 exports.getTest = async (req, res) => {
     try {
-        const { topicId } = req.params;
+        // Ưu tiên testId, nếu không có thì dùng topicId
+
+        let testId = req.params.testId;
+        let topicId = req.params.topicId;
         const { limit = 10 } = req.query;
 
-        console.log(`📊 Getting test for topic: ${topicId}`);
+        // Nếu testId có dạng '2:1' thì tách ra
+        if (testId && typeof testId === 'string' && testId.includes(':')) {
+            const parts = testId.split(':');
+            testId = parts[0];
+            topicId = parts[1];
+        }
 
-        if (!topicId || isNaN(topicId)) {
-            return res.status(400).json({
-                error: 'Invalid topic ID',
-                received: topicId
+        if (testId) {
+            const questions = await Question.findAll({
+                where: { TestId: parseInt(testId) },
+                order: sequelize.random(),
+                limit: parseInt(limit),
+                attributes: ['id', 'content', 'options']
+            });
+
+            // Nếu có topicId, lọc tiếp theo topicId
+            let filteredQuestions = questions;
+            if (topicId) {
+                filteredQuestions = questions.filter(q => q.topicId === parseInt(topicId));
+            }
+
+            // Luôn trả về mảng, không trả về lỗi 404 cho frontend
+            return res.json({
+                testId: parseInt(testId),
+                topicId: topicId ? parseInt(topicId) : undefined,
+                questions: Array.isArray(filteredQuestions) ? filteredQuestions : [],
+                totalQuestions: Array.isArray(filteredQuestions) ? filteredQuestions.length : 0
             });
         }
 
-        const questions = await Question.findAll({
-            where: { topicId: parseInt(topicId) },
-            order: sequelize.random(),
-            limit: parseInt(limit),
-            attributes: ['id', 'content', 'options']
-        });
+        if (topicId) {
+            if (isNaN(topicId)) {
+                return res.status(400).json({
+                    error: 'Invalid topic ID',
+                    received: topicId
+                });
+            }
 
-        if (questions.length === 0) {
-            return res.status(404).json({
-                error: 'No questions found for this topic',
-                topicId: topicId
+            const questions = await Question.findAll({
+                where: { topicId: parseInt(topicId) },
+                order: sequelize.random(),
+                limit: parseInt(limit),
+                attributes: ['id', 'content', 'options']
+            });
+
+            // Luôn trả về mảng, không trả về lỗi 404 cho frontend
+            return res.json({
+                topicId: parseInt(topicId),
+                questions: Array.isArray(questions) ? questions : [],
+                totalQuestions: Array.isArray(questions) ? questions.length : 0
             });
         }
 
-        res.json({
-            topicId: parseInt(topicId),
-            questions: questions,
-            totalQuestions: questions.length
-        });
+        return res.status(400).json({ error: 'Missing testId or topicId' });
 
     } catch (error) {
         console.error('❌ Get test error:', error);
@@ -95,47 +124,82 @@ exports.getTest = async (req, res) => {
  */
 exports.submitTest = async (req, res) => {
     try {
-        const { answers, topicId, timeTaken } = req.body;
-        const userId = req.user.id;
+        const { answers, testId, timeTaken } = req.body;
+        // Nếu dùng xác thực thì lấy userId từ req.user, nếu không thì lấy từ req.body
+        const userId = req.user?.id || req.body.userId;
 
-        console.log(`📊 Submitting test for user ${userId}, topic ${topicId}`);
+        console.log(`📊 Submitting test for user ${userId}, testId ${testId}`);
 
-        if (!topicId || !answers || !Array.isArray(answers)) {
+
+        if (!testId || !answers || !Array.isArray(answers)) {
             return res.status(400).json({
-                error: 'Missing required fields: topicId, answers'
+                error: 'Missing required fields: testId, answers'
             });
         }
 
-        // Get correct answers
+        // Lấy tất cả câu hỏi của test, lấy cả options để so sánh index
         const questions = await Question.findAll({
-            where: { topicId: parseInt(topicId) },
-            attributes: ['id', 'answer']
+            where: { TestId: parseInt(testId) },
+            attributes: ['id', 'answer', 'options']
         });
 
         let score = 0;
-        const totalQuestions = answers.length;
+        const totalQuestions = questions.length;
 
-        for (const answer of answers) {
-            const question = await Question.findByPk(answer.questionId);
-            if (question && question.answer === answer.selectedOption) {
-                score++;
+        // Chuẩn hóa answers thành mảng object [{questionId, selectedOption}]
+        let normalizedAnswers = [];
+        if (answers.length > 0 && typeof answers[0] === 'object' && answers[0].questionId !== undefined) {
+            normalizedAnswers = answers;
+        } else if (answers.length === questions.length) {
+            // Nếu answers là mảng số, ánh xạ theo thứ tự câu hỏi
+            normalizedAnswers = questions.map((q, idx) => ({
+                questionId: q.id,
+                selectedOption: answers[idx]
+            }));
+        }
+
+        for (const answer of normalizedAnswers) {
+            const question = questions.find(q => q.id === answer.questionId);
+            if (question) {
+                let optionsArr = Array.isArray(question.options) ? question.options : JSON.parse(question.options);
+                const correctValue = optionsArr[question.answer];
+                let userValue = null;
+                if (typeof answer.selectedOption === 'number') {
+                    userValue = optionsArr[answer.selectedOption];
+                } else if (typeof answer.selectedOption === 'string') {
+                    userValue = answer.selectedOption;
+                }
+                // Log chi tiết cho từng câu hỏi
+                console.log(`QID: ${question.id}`);
+                console.log(`Options:`, optionsArr);
+                console.log(`Answer index: ${question.answer}`);
+                console.log(`Correct value: ${correctValue}`);
+                console.log(`User selected index: ${answer.selectedOption}`);
+                console.log(`User value: ${userValue}`);
+                // Chấm điểm
+                if (userValue === correctValue) {
+                    score++;
+                }
             }
         }
 
+        // Lưu kết quả vào model Result, luôn có timeTaken và pass
+        const passed = score >= Math.ceil(totalQuestions * 0.7);
         const result = await Result.create({
             userId,
-            topicId: parseInt(topicId),
+            TestId: parseInt(testId),
             score,
             totalQuestions,
-            timeTaken: timeTaken || 0
+            timeTaken: typeof timeTaken === 'number' ? timeTaken : 0,
+            pass: passed
         });
 
         res.json({
             score,
             totalQuestions,
             percentage: Math.round((score / totalQuestions) * 100),
-            timeTaken: timeTaken || 0,
-            passed: score >= Math.ceil(totalQuestions * 0.7),
+            timeTaken: result.timeTaken,
+            passed: result.pass,
             resultId: result.id
         });
 
