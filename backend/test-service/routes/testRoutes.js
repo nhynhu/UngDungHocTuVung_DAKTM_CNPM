@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const testController = require('../controllers/testController_optimized');
+const testController = require('../controllers/testController');
 
 const healthCheck = (req, res) => {
     res.json({

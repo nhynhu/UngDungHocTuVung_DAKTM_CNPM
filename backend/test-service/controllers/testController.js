@@ -5,7 +5,7 @@ const { sequelize } = require('../models');
 
 exports.getAllTests = async (req, res) => {
     try {
-        console.log('📝 Getting all tests...');
+        console.log(' Getting all tests...');
 
         const tests = await Test.findAll({
             attributes: ['id', 'name', 'topicIds', 'createdAt'],
@@ -112,7 +112,7 @@ exports.submitTest = async (req, res) => {
         const { answers, testId, timeTaken } = req.body;
         const userId = req.user?.id || req.body.userId;
 
-        console.log(`📊 Submitting test for user ${userId}, testId ${testId}`);
+        console.log(` Submitting test for user ${userId}, testId ${testId}`);
 
         if (!testId || !answers || !Array.isArray(answers)) {
             return res.status(400).json({

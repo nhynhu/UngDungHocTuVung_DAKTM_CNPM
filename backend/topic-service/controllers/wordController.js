@@ -5,14 +5,14 @@ exports.getWordsByTopic = async (req, res) => {
     try {
         const { topicId } = req.params;
 
-        console.log(`🔍 Getting words for topic: ${topicId}`);
+        console.log(` Getting words for topic: ${topicId}`);
 
         const words = await Word.findAll({
             where: { TopicId: topicId },
             order: [['english', 'ASC']]
         });
 
-        console.log(`📝 Found ${words.length} words for topic ${topicId}`);
+        console.log(` Found ${words.length} words for topic ${topicId}`);
 
         const formattedWords = words.map(word => ({
             id: word.id,
@@ -26,7 +26,7 @@ exports.getWordsByTopic = async (req, res) => {
         res.json(formattedWords);
 
     } catch (err) {
-        console.error('❌ Get words by topic error:', err);
+        console.error(' Get words by topic error:', err);
         res.status(500).json({ error: err.message });
     }
 };
@@ -41,7 +41,7 @@ exports.searchWords = async (req, res) => {
         }
 
         let results = [];
-        
+
         if (type === 'all' || type === 'topics') {
             const topics = await Topic.findAll({
                 where: {
@@ -93,7 +93,7 @@ exports.searchWords = async (req, res) => {
 
         res.json(results);
     } catch (err) {
-        console.error('❌ SearchWords error:', err);
+        console.error(' SearchWords error:', err);
         res.status(500).json({ error: 'Internal server error', message: err.message });
     }
 };

@@ -4,7 +4,14 @@ import { NavLink } from 'react-router-dom';
 
 const TestCard = ({ title, img, text, link }) => (
   <Card className="card-equal">
-    <Card.Img variant="top" src={img} />
+    <Card.Img 
+      variant="top" 
+      src={img || "image/test.png"} 
+      onError={(e) => {
+        e.target.src = "image/testchoose.jpg";
+      }}
+      style={{ height: '200px', objectFit: 'cover' }}
+    />
     <Card.Body>
       <Card.Title>{title}</Card.Title>
       <Card.Text>{text}</Card.Text>

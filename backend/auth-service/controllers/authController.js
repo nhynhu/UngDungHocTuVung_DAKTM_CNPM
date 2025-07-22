@@ -1,7 +1,6 @@
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://user-service:5004';
 
 exports.register = async (req, res) => {

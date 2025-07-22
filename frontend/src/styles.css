@@ -71,6 +71,22 @@ code {
   color: #e402a4;
 }
 
+.introduce-box {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.introduce-text {
+  flex: 1;
+}
+
+.mascot-img {
+  flex-shrink: 0;
+  width: 100px;
+  height: auto;
+}
+
 /* ===== SEARCH FUNCTIONALITY ===== */
 .search-dropdown {
   position: absolute;

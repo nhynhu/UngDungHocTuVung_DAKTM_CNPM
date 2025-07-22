@@ -1,5 +1,5 @@
 const express = require('express');
-const { getQuestionsByTopic } = require('../controllers/questionController_optimized');
+const { getQuestionsByTopic } = require('../controllers/questionController');
 const router = express.Router();
 
 router.get('/:topicId', getQuestionsByTopic);

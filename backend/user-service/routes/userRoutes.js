@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/userController_optimized');
+const userController = require('../controllers/userController');
 
 router.post('/', userController.createUser);
 router.get('/email/:email', userController.getUserByEmail);

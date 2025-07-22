@@ -75,13 +75,9 @@ const Header = () => {
                         </Nav>
                         <Nav className="ms-auto">
                             {user ? (
-                                <NavDropdown title={`Setting (${user.fullname})`} id="navbarScrollingDropdown">
-                                    <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
-                                    <NavDropdown.Item onClick={() => handleProtectedNavigation('/topics', 'Learn')}>
-                                        Learn
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item onClick={() => handleProtectedNavigation('/test', 'Test')}>
-                                        Test
+                                <NavDropdown title={<><i className="bi bi-person-circle"></i> {user.fullname}</>} id="navbarScrollingDropdown">
+                                    <NavDropdown.Item onClick={() => handleProtectedNavigation('/login', 'Another account')}>
+                                        Another account
                                     </NavDropdown.Item>
                                     <NavDropdown.Divider />
                                     <NavDropdown.Item onClick={handleLogout}>Log out</NavDropdown.Item>

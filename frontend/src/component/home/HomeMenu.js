@@ -32,7 +32,7 @@ const HomeMenu = () => {
 
     return (
         <>
-            <div className="home-menu-container" style={{ minHeight: '100vh' }}>
+            <div className="home-menu-container" style={{ minHeight: '100vh', display: 'flex' }}>
                 <Sidebar
                     rootStyles={{
                         [`.${sidebarClasses.container}`]: {
