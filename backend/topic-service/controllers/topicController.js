@@ -7,25 +7,26 @@ const fs = require('fs');
 const getTopicImageFromUploads = (topicName) => {
     const imageMapping = {
         'Animals': 'animals.jpg',
-        'Body Parts': 'body-parts.png', // Sửa theo file thực tế
-        'Color': 'colors.jpg', // Sửa tên topic
+        'Body Parts': 'body-parts.png',
+        'Colors': 'colors.jpg',  // SỬA: 'Color' thành 'Colors'
         'Family': 'family.jpg',
-        'Food': 'food.png', // Sửa extension
+        'Food': 'food.png',
         'Household Items': 'household-items.jpg',
-        'Jobs': 'jobs.png', // Sửa extension
+        'Jobs': 'jobs.png',
         'Pets': 'pets.jpg',
-        'School Supplies': 'schoolsupplies.jpg', // Sửa tên file
+        'School Supplies': 'schoolsupplies.jpg',
         'Weather': 'weather.jpg'
     };
 
     const imageName = imageMapping[topicName];
     if (imageName) {
-        const imagePath = path.join(__dirname, '../../uploads', imageName);
+        // SỬA LỖI: Đường dẫn đúng từ topic-service root
+        const imagePath = path.join(__dirname, '../uploads', imageName);
         if (fs.existsSync(imagePath)) {
             return `/uploads/${imageName}`;
         }
     }
-    return null;
+    return '/uploads/default-topic.jpg';  // Fallback image
 };
 
 /**
@@ -117,12 +118,32 @@ exports.getAllTopics = async (req, res) => {
         const topics = await Topic.findAll({
             include: [{
                 model: Word,
-                as: 'words'
-            }]
+                as: 'words',
+                attributes: ['id'] // Chỉ lấy id để đếm
+            }],
+            order: [['id', 'ASC']]
         });
-        res.json(topics);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+
+        // Format theo yêu cầu của frontend
+        const formattedTopics = topics.map(topic => ({
+            id: topic.id,
+            name: topic.name,
+            nameVi: topic.nameVi,
+            description: topic.description,
+            image: topic.image, // Đã có format /uploads/...
+            wordCount: topic.words ? topic.words.length : 0,
+            // SỬA LỖI: Thêm các field cần thiết cho TopicCard
+            title: topic.nameVi || topic.name,
+            text: topic.description || `Học từ vựng về ${topic.nameVi || topic.name}`,
+            link: `/lessons?topicId=${topic.id}`
+        }));
+
+        console.log(`✅ Found ${formattedTopics.length} topics`);
+        res.json(formattedTopics);
+
+    } catch (err) {
+        console.error('Get all topics error:', err);
+        res.status(500).json({ error: err.message });
     }
 };
 

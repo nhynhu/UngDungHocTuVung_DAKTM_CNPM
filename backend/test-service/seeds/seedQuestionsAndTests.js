@@ -7,7 +7,7 @@ const { sequelize } = require('../models');
 const Question = require('../models/Question');
 const Test = require('../models/Test');
 
-// Complete data cho 10 topics với nhiều từ hơn để tạo distractors
+// Dữ liệu từ vựng KHỚP VỚI TOPIC-SERVICE (cùng thứ tự và cùng ID)
 const topicWordsData = {
     1: { // Animals
         name: 'Animals',
@@ -19,6 +19,7 @@ const topicWordsData = {
             { english: 'Lion', vietnamese: 'Con sư tử' },
             { english: 'Bear', vietnamese: 'Con gấu' },
             { english: 'Horse', vietnamese: 'Con ngựa' },
+            { english: 'Cow', vietnamese: 'Con bò' },
             { english: 'Pig', vietnamese: 'Con lợn' }
         ]
     },
@@ -55,10 +56,10 @@ const topicWordsData = {
             { english: 'Mother', vietnamese: 'Mẹ' },
             { english: 'Brother', vietnamese: 'Anh/Em trai' },
             { english: 'Sister', vietnamese: 'Chị/Em gái' },
-            { english: 'Grandmother', vietnamese: 'Bà' },
+            { english: 'Son', vietnamese: 'Con trai' },
+            { english: 'Daughter', vietnamese: 'Con gái' },
             { english: 'Grandfather', vietnamese: 'Ông' },
-            { english: 'Uncle', vietnamese: 'Chú/Bác' },
-            { english: 'Aunt', vietnamese: 'Cô/Dì' }
+            { english: 'Grandmother', vietnamese: 'Bà' }
         ]
     },
     5: { // Food
@@ -71,7 +72,7 @@ const topicWordsData = {
             { english: 'Fish', vietnamese: 'Cá' },
             { english: 'Soup', vietnamese: 'Canh/Súp' },
             { english: 'Egg', vietnamese: 'Trứng' },
-            { english: 'Fruit', vietnamese: 'Trái cây' }
+            { english: 'Pizza', vietnamese: 'Bánh pizza' }
         ]
     },
     6: { // Household Items
@@ -141,33 +142,6 @@ const topicWordsData = {
     }
 };
 
-// Function để tạo realistic wrong options
-function generateWrongOptions(correctAnswer, currentTopicId, excludeWord) {
-    const wrongOptions = [];
-    const allTopics = Object.keys(topicWordsData);
-
-    // Lấy 1-2 từ sai từ cùng topic (nếu có đủ từ)
-    const currentTopicWords = topicWordsData[currentTopicId].words
-        .filter(word => word.vietnamese !== correctAnswer && word.english !== excludeWord)
-        .map(word => word.vietnamese);
-
-    if (currentTopicWords.length > 0) {
-        const randomSameTopicWords = shuffleArray(currentTopicWords).slice(0, 3);
-        wrongOptions.push(...randomSameTopicWords);
-    }
-    return wrongOptions;
-}
-
-// Utility function để shuffle array
-function shuffleArray(array) {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-}
-
 const seedQuestionsAndTests = async () => {
     try {
         console.log('🔗 Connecting to test database...');
@@ -176,9 +150,18 @@ const seedQuestionsAndTests = async () => {
         await sequelize.authenticate();
         console.log('✅ Test database connected successfully');
 
-        // Reset database với force: true
+        // SỬA LỖI: Reset database với foreign key constraints được disable
         console.log('🔄 Resetting database...');
+
+        // Disable foreign key checks
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+
+        // Force sync để drop và tạo lại tables
         await sequelize.sync({ force: true });
+
+        // Re-enable foreign key checks
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+
         console.log('✅ Test database reset successfully');
 
         // 8 bài test sử dụng đầy đủ 10 topics
@@ -296,8 +279,10 @@ const seedQuestionsAndTests = async () => {
             for (let i = 0; i < 5; i++) {
                 const word = topic2Data.words[i];
 
+                // Tạo wrong options realistic
                 const wrongOptions = generateWrongOptions(word.vietnamese, config.topic2, word.english);
 
+                // Tạo 4 options và shuffle
                 const allOptions = [word.vietnamese, ...wrongOptions];
                 const shuffledOptions = shuffleArray(allOptions);
                 const correctIndex = shuffledOptions.indexOf(word.vietnamese);
@@ -310,46 +295,79 @@ const seedQuestionsAndTests = async () => {
                     TestId: test.id
                 });
                 totalQuestions++;
-                console.log(`      ✓ Q${i + 6}: ${word.english} -> ${word.vietnamese} (position ${correctIndex})`);
+                console.log(`      ✓ Q${i + 1}: ${word.english} -> ${word.vietnamese} (position ${correctIndex})`);
                 console.log(`         Options: ${shuffledOptions.join(', ')}`);
             }
 
-            console.log(`✅ Created 10 questions for ${config.name}`);
+            console.log(`✅ Test "${config.name}" completed with 10 questions`);
         }
 
-        console.log('\n🎉 Seed questions and tests completed successfully!');
+        console.log(`\n🎉 Seed questions and tests completed successfully!`);
         console.log(`📊 Summary:`);
         console.log(`   • Tests created: ${totalTests}`);
         console.log(`   • Questions created: ${totalQuestions}`);
-        console.log(`   • Topics covered: All 10 topics`);
-        console.log(`   • Average questions per test: ${totalQuestions / totalTests}`);
-
-        // Verify data
-        const testCount = await Test.count();
-        const questionCount = await Question.count();
-
-        console.log(`\n✅ Database verification:`);
-        console.log(`   • Tests in DB: ${testCount}`);
-        console.log(`   • Questions in DB: ${questionCount}`);
-
-        // Show topic coverage
-        console.log(`\n📋 Topic Coverage Summary:`);
-        testConfigs.forEach((config, index) => {
-            console.log(`   Test ${index + 1}: ${config.name}`);
-            console.log(`           Topics: ${config.topicIds.join(' & ')} (${topicWordsData[config.topic1].name} & ${topicWordsData[config.topic2].name})`);
-        });
+        console.log(`   • Topics covered: ${Object.keys(topicWordsData).length}`);
 
     } catch (err) {
-        console.error('❌ Seed failed:', err.message);
-        console.error('📍 Error location:', err.stack);
+        console.error('❌ Seed error:', err);
+        throw err;
     } finally {
-        console.log('\n🔌 Closing database connection...');
         await sequelize.close();
-        console.log('✅ Database connection closed');
-        process.exit(0);
     }
 };
 
-// Run seeding
-console.log('🚀 Starting test data seeding...');
-seedQuestionsAndTests();
+// Function để tạo realistic wrong options
+function generateWrongOptions(correctAnswer, currentTopicId, excludeWord) {
+    const wrongOptions = [];
+    const allTopics = Object.keys(topicWordsData);
+
+    // Lấy từ sai từ cùng topic (nếu có đủ từ)
+    const currentTopicWords = topicWordsData[currentTopicId].words
+        .filter(word => word.vietnamese !== correctAnswer && word.english !== excludeWord)
+        .map(word => word.vietnamese);
+
+    if (currentTopicWords.length > 0) {
+        const randomSameTopicWords = shuffleArray(currentTopicWords).slice(0, 2);
+        wrongOptions.push(...randomSameTopicWords);
+    }
+
+    // Nếu chưa đủ 3 wrong options, lấy từ các topic khác
+    while (wrongOptions.length < 3) {
+        const randomTopicId = allTopics[Math.floor(Math.random() * allTopics.length)];
+        const otherTopicWords = topicWordsData[randomTopicId].words
+            .filter(word => word.vietnamese !== correctAnswer && !wrongOptions.includes(word.vietnamese))
+            .map(word => word.vietnamese);
+
+        if (otherTopicWords.length > 0) {
+            const randomWord = otherTopicWords[Math.floor(Math.random() * otherTopicWords.length)];
+            wrongOptions.push(randomWord);
+        }
+    }
+
+    return wrongOptions.slice(0, 3);
+}
+
+// Utility function để shuffle array
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+// Chạy seeder nếu file được gọi trực tiếp
+if (require.main === module) {
+    seedQuestionsAndTests()
+        .then(() => {
+            console.log('✅ Test seeding completed successfully');
+            process.exit(0);
+        })
+        .catch(err => {
+            console.error('❌ Test seeding failed:', err);
+            process.exit(1);
+        });
+}
+
+module.exports = seedQuestionsAndTests;

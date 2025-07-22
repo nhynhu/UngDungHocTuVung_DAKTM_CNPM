@@ -1,117 +1,123 @@
 require('dotenv').config();
 const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const cors = require('cors');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// CORS middleware
+// Service URLs
+const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://auth-service:5001';
+const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://user-service:5004';
+const TOPIC_SERVICE_URL = process.env.TOPIC_SERVICE_URL || 'http://topic-service:5005';
+const TEST_SERVICE_URL = process.env.TEST_SERVICE_URL || 'http://test-service:5006';
+
+// Middleware
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    credentials: true
 }));
 
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+// CHỈ dùng express.json() cho các route KHÔNG proxy
+app.use('/health', express.json());
+
+// KHÔNG dùng app.use(express.json()) cho toàn bộ app!
 
 // Request logging
 app.use((req, res, next) => {
-    console.log(`🌐 Gateway: ${req.method} ${req.originalUrl}`);
+    console.log(`🌐 API Gateway: ${req.method} ${req.originalUrl}`);
     next();
 });
 
-// Health check cho API Gateway
+// Proxy options
+const proxyOptions = {
+    changeOrigin: true,
+    timeout: 30000,
+    logLevel: 'debug',
+    onError: (err, req, res) => {
+        console.error(`❌ Proxy Error for ${req.url}:`, err.message);
+        res.status(503).json({
+            error: 'Service unavailable',
+            message: err.message,
+            service: req.url.split('/')[2]
+        });
+    },
+    onProxyReq: (proxyReq, req, res) => {
+        console.log(`🔄 Proxying: ${req.method} ${req.url} -> ${proxyReq.path}`);
+    }
+};
+
+// Auth service proxy
+app.use('/api/auth', createProxyMiddleware({
+    target: AUTH_SERVICE_URL,
+    pathRewrite: { '^/api/auth': '/auth' },
+    onProxyReq: (proxyReq, req, res) => {
+        if (req.body) {
+            const bodyData = JSON.stringify(req.body);
+            proxyReq.setHeader('Content-Type', 'application/json');
+            proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+            proxyReq.write(bodyData);
+        }
+    },
+    ...proxyOptions
+}));
+
+// User service proxy
+app.use('/api/users', createProxyMiddleware({
+    target: USER_SERVICE_URL,
+    pathRewrite: { '^/api/users': '/users' },
+    ...proxyOptions
+}));
+
+// Topic service proxy
+app.use('/api/topics', createProxyMiddleware({
+    target: TOPIC_SERVICE_URL,
+    pathRewrite: { '^/api/topics': '/topics' },
+    ...proxyOptions
+}));
+
+// Test service proxy
+app.use('/api/tests', createProxyMiddleware({
+    target: process.env.TEST_SERVICE_URL || 'http://test-service:5006',
+    pathRewrite: { '^/api/tests': '/tests' },
+    ...proxyOptions
+}));
+
+// Static files proxy
+app.use('/uploads', createProxyMiddleware({
+    target: TOPIC_SERVICE_URL,
+    pathRewrite: { '^/uploads': '/uploads' },
+    ...proxyOptions
+}));
+
+// Words service proxy
+app.use('/api/words', createProxyMiddleware({
+    target: TOPIC_SERVICE_URL,
+    pathRewrite: { '^/api/words': '/words' },
+    ...proxyOptions
+}));
+
+// Health check
 app.get('/health', (req, res) => {
     res.json({
         service: 'api-gateway',
         status: 'healthy',
         timestamp: new Date().toISOString(),
-        routes: {
-            auth: 'http://auth-service:5001',
-            users: 'http://user-service:5004',
-            topics: 'http://topic-service:5005',
-            words: 'http://topic-service:5005',
-            tests: 'http://test-service:5006',
-            mail: 'http://mail-service:5002'
+        proxies: {
+            auth: AUTH_SERVICE_URL,
+            users: USER_SERVICE_URL,
+            topics: TOPIC_SERVICE_URL,
+            tests: TEST_SERVICE_URL
         }
     });
 });
 
-// Proxy configuration with error handling
-const proxyOptions = {
-    changeOrigin: true,
-    timeout: 30000,
-    onError: (err, req, res) => {
-        console.error(`❌ Proxy error for ${req.path}:`, err.message);
-        if (!res.headersSent) {
-            res.status(503).json({
-                error: 'Service unavailable',
-                message: err.message,
-                path: req.path
-            });
-        }
-    },
-    onProxyReq: (proxyReq, req, res) => {
-        console.log(`🔄 Proxying: ${req.method} ${req.path} -> ${proxyReq.host}${proxyReq.path}`);
-    }
-};
-
-// Proxy routes với proper error handling
-app.use('/auth', createProxyMiddleware({
-    target: 'http://auth-service:5001',
-    ...proxyOptions
-}));
-
-app.use('/users', createProxyMiddleware({
-    target: 'http://user-service:5004',
-    ...proxyOptions
-}));
-
-app.use('/topics', createProxyMiddleware({
-    target: 'http://topic-service:5005',
-    ...proxyOptions
-}));
-
-app.use('/words', createProxyMiddleware({
-    target: 'http://topic-service:5005',
-    ...proxyOptions
-}));
-
-app.use('/tests', createProxyMiddleware({
-    target: 'http://test-service:5006',
-    ...proxyOptions
-}));
-
-app.use('/mail', createProxyMiddleware({
-    target: 'http://mail-service:5002',
-    ...proxyOptions
-}));
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('❌ Gateway error:', err);
-    if (!res.headersSent) {
-        res.status(500).json({
-            error: 'Internal server error',
-            message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-        });
-    }
-});
-
-// 404 handler
-app.use('*', (req, res) => {
-    res.status(404).json({
-        error: 'Route not found',
-        path: req.originalUrl,
-        availableRoutes: ['/health', '/auth/*', '/users/*', '/topics/*', '/words/*', '/tests/*', '/mail/*']
-    });
-});
-
-app.listen(PORT, () => {
+// Start server
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🌐 API Gateway running on port ${PORT}`);
-    console.log(`📍 Health check: http://localhost:${PORT}/health`);
+    console.log(`📍 Proxy routes:`);
+    console.log(`   • /api/auth/* -> ${AUTH_SERVICE_URL}/auth/*`);
+    console.log(`   • /api/users/* -> ${USER_SERVICE_URL}/users/*`);
+    console.log(`   • /api/topics/* -> ${TOPIC_SERVICE_URL}/topics/*`);
+    console.log(`   • /api/tests/* -> ${TEST_SERVICE_URL}/*`);
 });

@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children }) => {
 
     // Debug log
     console.log('ProtectedRoute Debug:', {
-        isAuthenticated: isAuthenticated(),
+        isAuthenticated,
         loading,
         user: localStorage.getItem('user'),
         token: localStorage.getItem('token')
@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children }) => {
         return <div>Loading...</div>;
     }
 
-    if (!isAuthenticated()) {
+    if (!isAuthenticated) {
         console.log('Access denied - showing login modal');
         return (
             <div style={{

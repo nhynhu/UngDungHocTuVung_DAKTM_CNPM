@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="200" fill="#9b59b6"/>
+  <text x="150" y="80" font-family="Arial, sans-serif" font-size="40" text-anchor="middle" fill="white">🎨</text>
+  <text x="150" y="130" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="white" font-weight="bold">Colors</text>
+</svg>

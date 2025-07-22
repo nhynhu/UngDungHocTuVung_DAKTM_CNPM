@@ -1,103 +1,167 @@
-const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://user-service:5004';
 
 /**
- * Register - BYPASS EMAIL VERIFICATION
+ * Register user
  */
 exports.register = async (req, res) => {
     const { email, password, fullname } = req.body;
+    console.log('📝 Registration attempt:', { email });
 
     try {
-        console.log('📝 Registration request:', { email, fullname });
-
         // Validation
         if (!email || !password || !fullname) {
-            return res.status(400).json({ error: 'All fields are required' });
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+        if (password.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters' });
         }
 
         // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 12);
 
-        // Create user directly (bypass email verification)
-        const userServiceUrl = process.env.USER_SERVICE_URL || 'http://user-service:5004';
+        // Gọi user-service để tạo user
+        const response = await axios.post(
+            `${USER_SERVICE_URL}/users`,
+            { email: email.toLowerCase().trim(), password: hashedPassword, fullname: fullname.trim() },
+            { timeout: 10000 }
+        );
 
-        const response = await axios.post(`${userServiceUrl}/users`, {
-            email,
-            password: hashedPassword,
-            fullname,
-            isVerified: true  // Skip email verification
-        }, {
-            timeout: 10000
-        });
+        // Lấy dữ liệu đúng từ response.data (không cần .user)
+        const userData = response.data;
 
-        console.log('✅ User created successfully:', response.data);
+        if (!userData || !userData.id || !userData.email) {
+            // Nếu user-service trả về dữ liệu không hợp lệ
+            console.error('❌ Invalid user data from user-service:', response.data);
+            return res.status(500).json({ message: 'User service returned invalid data.' });
+        }
 
-        res.json({
-            message: 'Account created successfully! You can now login.',
-            email: email,
+        console.log('✅ User created via user-service:', userData.email);
+        return res.status(201).json({
+            message: 'Registration successful',
             user: {
-                id: response.data.id,
-                email: response.data.email,
-                fullname: response.data.fullname
+                id: userData.id,
+                email: userData.email,
+                fullname: userData.fullname
             }
         });
 
-    } catch (err) {
-        console.error('❌ Register error:', err.message);
+    } catch (error) {
+        console.error('❌ Registration Error:', error.message);
 
-        if (err.response?.status === 409) {
-            return res.status(409).json({ error: 'Email already exists' });
+        // Nếu user-service trả lỗi (ví dụ 409)
+        if (error.response) {
+            return res
+                .status(error.response.status)
+                .json({ message: error.response.data.message || 'Registration failed.' });
         }
 
-        res.status(500).json({
-            error: 'Registration failed: ' + err.message
-        });
+        // Nếu không kết nối được hoặc timeout
+        if (error.code === 'ECONNABORTED' || error.code === 'ECONNREFUSED') {
+            return res.status(503).json({ message: 'User service unavailable. Please try again later.' });
+        }
+
+        // Lỗi khác
+        return res.status(500).json({ message: 'Internal server error' });
     }
 };
 
 /**
- * Login
+ * Login user
  */
 exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const userServiceUrl = process.env.USER_SERVICE_URL || 'http://user-service:5004';
-        const response = await axios.get(`${userServiceUrl}/users/email/${email}`);
-        const user = response.data;
+        console.log('🔐 Login attempt:', { email });
 
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        // Validation
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email and password are required'
+            });
+        }
 
+        // Email format validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid email format'
+            });
+        }
+
+        // Get user from user-service
+        const userResponse = await axios.get(`${USER_SERVICE_URL}/users/email/${email.toLowerCase().trim()}`, {
+            timeout: 15000,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const user = userResponse.data;
+
+        // Verify password
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).json({ error: 'Invalid password' });
+        if (!isMatch) {
+            console.log('❌ Password mismatch for:', email);
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid email or password'
+            });
+        }
+
+        // Generate JWT token
+        const payload = {
+            id: user.id,
+            email: user.email,
+            fullname: user.fullname
+        };
 
         const token = jwt.sign(
-            { id: user.id, email: user.email, fullname: user.fullname },
-            process.env.JWT_SECRET || 'secret',
-            { expiresIn: '24h' }
+            payload,
+            process.env.JWT_SECRET || 'fallback-secret',
+            { expiresIn: process.env.JWT_EXPIRE || '1d' }
         );
 
-        res.json({
-            token,
-            user: {
-                id: user.id,
-                email: user.email,
-                fullname: user.fullname
-            },
-            message: 'Login successful'
-        });
-    } catch (err) {
-        console.error('Login error:', err);
-        res.status(500).json({ error: 'Login failed' });
-    }
-};
+        // Remove password from response
+        delete user.password;
 
-/**
- * Verify - placeholder
- */
-exports.verify = async (req, res) => {
-    res.json({ message: 'Verification not implemented' });
+        console.log('✅ Login successful:', { email });
+        res.json({
+            success: true,
+            message: 'Login successful',
+            token,
+            user
+        });
+
+    } catch (error) {
+        console.error('❌ Login error:', error.message);
+
+        // Handle different error types
+        if (error.code === 'ECONNREFUSED') {
+            return res.status(503).json({
+                success: false,
+                message: 'User service unavailable'
+            });
+        }
+
+        if (error.response?.status === 404) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid email or password'
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Login failed. Please try again.'
+        });
+    }
 };
 
 /**
@@ -107,6 +171,7 @@ exports.healthCheck = (req, res) => {
     res.json({
         service: 'auth-service',
         status: 'healthy',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        version: '1.0.0'
     });
 };

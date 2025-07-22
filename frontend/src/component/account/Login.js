@@ -22,17 +22,60 @@ const Login = () => {
     if (error) setError('');
   };
 
+  const validateForm = () => {
+    if (!formData.email.trim()) {
+      setError('Please enter your email');
+      return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setError('Please enter a valid email');
+      return false;
+    }
+    if (!formData.password.trim()) {
+      setError('Please enter your password');
+      return false;
+    }
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     setLoading(true);
     setError('');
 
     try {
-      const response = await ApiService.login(formData);
-      login(response.token, response.user);
-      navigate('/');
+      console.log('🚀 Starting login...', { email: formData.email });
+
+      const result = await ApiService.login(formData);
+      console.log('✅ Login successful:', { user: result.user?.email });
+
+      login(result.user, result.token);
+
+      // SỬA LỖI: Navigate sau khi state đã update
+      setTimeout(() => {
+        navigate('/', { replace: true });
+      }, 100);
+
     } catch (error) {
-      setError(error.message || 'Đăng nhập thất bại');
+      console.error('❌ Login error:', error);
+
+      // SỬA LỖI: Better error handling
+      if (error.message.includes('401') || error.message.includes('unauthorized')) {
+        setError('Invalid email or password. Please try again.');
+      } else if (error.message.includes('timeout')) {
+        setError('Connection timeout. Please try again.');
+      } else if (error.message.includes('network') || error.message.includes('fetch')) {
+        setError('Unable to connect to server. Please check your connection.');
+      } else {
+        setError(error.message || 'Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -40,17 +83,19 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      {/* Logo ở góc trên trái */}
       <img
         src="/image/Screenshot 2025-07-09 182720.png"
         alt="VocabMafia Logo"
         className="auth-logo-corner"
+        onClick={() => navigate('/')}
+        style={{ cursor: 'pointer' }}
       />
 
-      {/* Form ở giữa */}
       <div className="login-container">
         <div className="auth-card">
           <form className="auth-form" onSubmit={handleSubmit}>
+            <h2 className="text-center mb-4">Sign In</h2>
+
             {error && (
               <div className="alert alert-danger">
                 {error}
@@ -58,7 +103,7 @@ const Login = () => {
             )}
 
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Email Address</label>
               <input
                 type="email"
                 id="email"
@@ -68,6 +113,8 @@ const Login = () => {
                 required
                 disabled={loading}
                 className="form-control"
+                placeholder="Enter your email"
+                autoComplete="email"
               />
             </div>
 
@@ -82,25 +129,29 @@ const Login = () => {
                 required
                 disabled={loading}
                 className="form-control"
+                placeholder="Enter your password"
+                autoComplete="current-password"
               />
             </div>
 
             <button
               type="submit"
-              className="btn-auth"
               disabled={loading}
+              className="btn-auth"
             >
-              {loading ? 'Signing in...' : 'Log In'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
 
             <div className="auth-footer">
-              <p>Don't have an account?
+              <p>
+                Don't have an account?{' '}
                 <button
                   type="button"
-                  onClick={() => navigate('/signup')}
                   className="link-btn"
+                  onClick={() => navigate('/signup')}
+                  disabled={loading}
                 >
-                  Register
+                  Sign up now
                 </button>
               </p>
             </div>

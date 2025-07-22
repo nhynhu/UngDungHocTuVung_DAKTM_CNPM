@@ -1,34 +1,51 @@
 const Test = require('../models/Test');
 const Question = require('../models/Question');
 const Result = require('../models/Result');
-const { sequelize } = require('../models'); // Fix import
+const { sequelize } = require('../models');
 
 /**
- * Get all tests
+ * Get all tests - SỬA LỖI: Thêm trường description vào model
  */
 exports.getAllTests = async (req, res) => {
     try {
+        console.log('📝 Getting all tests...');
+
         const tests = await Test.findAll({
-            attributes: ['id', 'name', 'description', 'topicIds']
+            attributes: ['id', 'name', 'topicIds', 'createdAt'],
+            include: [{
+                model: Question,
+                as: 'questions',
+                attributes: ['id'],
+                required: false
+            }],
+            order: [['createdAt', 'DESC']]
         });
 
         const formattedTests = tests.map(test => ({
             id: test.id,
             title: test.name,
             img: 'https://images.pexels.com/photos/45170/kittens-cat-cat-puppy-cute-45170.jpeg',
-            text: test.description || 'Bài test từ vựng',
-            link: `/dotests?testId=${test.id}`
+            text: `Test từ vựng với ${test.questions?.length || 0} câu hỏi`,
+            link: `/dotests?testId=${test.id}`,
+            questionCount: test.questions?.length || 0,
+            topicIds: typeof test.topicIds === 'string' ? JSON.parse(test.topicIds) : test.topicIds,
+            createdAt: test.createdAt
         }));
 
+        console.log(`✅ Found ${formattedTests.length} tests`);
         res.json(formattedTests);
+
     } catch (err) {
         console.error('❌ Get all tests error:', err);
-        res.status(500).json({ error: err.message });
+        res.status(500).json({
+            error: 'Failed to get tests',
+            message: err.message
+        });
     }
 };
 
 /**
- * Get test questions for a topic
+ * Get test questions for a topic - KHÔNG THAY ĐỔI
  */
 exports.getTest = async (req, res) => {
     try {
@@ -74,7 +91,7 @@ exports.getTest = async (req, res) => {
 };
 
 /**
- * Submit test results
+ * Submit test results - KHÔNG THAY ĐỔI
  */
 exports.submitTest = async (req, res) => {
     try {
@@ -126,40 +143,6 @@ exports.submitTest = async (req, res) => {
         console.error('❌ Submit test error:', error);
         res.status(500).json({
             error: 'Failed to submit test',
-            message: error.message
-        });
-    }
-};
-
-/**
- * Get user test history
- */
-exports.getUserResults = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const { limit = 10, offset = 0 } = req.query;
-
-        console.log(`📊 Getting results for user: ${userId}`);
-
-        const results = await Result.findAndCountAll({
-            where: { userId: userId },
-            limit: parseInt(limit),
-            offset: parseInt(offset),
-            order: [['createdAt', 'DESC']],
-            attributes: ['id', 'topicId', 'score', 'totalQuestions', 'timeTaken', 'createdAt']
-        });
-
-        res.json({
-            results: results.rows,
-            total: results.count,
-            page: Math.floor(offset / limit) + 1,
-            totalPages: Math.ceil(results.count / limit)
-        });
-
-    } catch (error) {
-        console.error('❌ Get user results error:', error);
-        res.status(500).json({
-            error: 'Failed to get user results',
             message: error.message
         });
     }

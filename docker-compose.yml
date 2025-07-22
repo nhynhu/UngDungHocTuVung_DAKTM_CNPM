@@ -9,7 +9,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
+      - REACT_APP_API_URL=http://localhost:8000/api
     depends_on:
       - api-gateway
     restart: unless-stopped
@@ -23,11 +23,13 @@ services:
       - "8000:8000"
     environment:
       - NODE_ENV=production
+      - FRONTEND_URL=http://localhost:3000
     depends_on:
       - auth-service
       - user-service
       - topic-service
       - test-service
+      - mail-service
     restart: unless-stopped
 
   # ==================== MICROSERVICES ====================
@@ -39,6 +41,11 @@ services:
       - "5001:5001"
     environment:
       - NODE_ENV=production
+      - USER_SERVICE_URL=http://user-service:5004
+      - JWT_SECRET=secretkey
+      - JWT_EXPIRES_IN=1d
+    depends_on: # Auth service cần user-service hoạt động
+      - user-service
     restart: unless-stopped
 
   mail-service:
@@ -49,6 +56,11 @@ services:
       - "5002:5002"
     environment:
       - NODE_ENV=production
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=587
+      - EMAIL=duongbaokhanh123tv@gmail.com
+      - EMAIL_PASS=inrpcnnqellosqdk
+      - MAIL_FROM="VocabMafia <noreply@vocabmafia.com>"
     restart: unless-stopped
 
   user-service:
@@ -59,8 +71,15 @@ services:
       - "5004:5004"
     environment:
       - NODE_ENV=production
+      - DB_HOST=db-users
+      - DB_USER=root
+      - DB_PASSWORD=0000
+      - DB_NAME=user_db
+      - DB_DIALECT=mysql
+      - DB_PORT=3306
     depends_on:
-      - db-users
+      db-users:
+        condition: service_healthy # SỬA LỖI: Chờ cho đến khi DB sẵn sàng
     restart: unless-stopped
 
   topic-service:
@@ -69,12 +88,17 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5005:5005"
-    env_file:
-      - ./backend/topic-service/.env
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=db-topics
+      - DB_USER=root
+      - DB_PASSWORD=0000
+      - DB_NAME=topic_db
+      - DB_DIALECT=mysql
+      - DB_PORT=3306
     depends_on:
-      - db-topics
-    volumes:
-      - ./uploads:/app/uploads
+      db-topics:
+        condition: service_healthy 
     restart: unless-stopped
 
   test-service:
@@ -83,10 +107,17 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5006:5006"
-    env_file:
-      - ./backend/test-service/.env
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=db-tests
+      - DB_USER=root
+      - DB_PASSWORD=0000
+      - DB_NAME=test_db
+      - DB_DIALECT=mysql
+      - DB_PORT=3306
     depends_on:
-      - db-tests
+      db-tests:
+        condition: service_healthy # SỬA LỖI: Chờ cho đến khi DB sẵn sàng
     restart: unless-stopped
 
   # ==================== DATABASES ====================
@@ -101,6 +132,11 @@ services:
       - "3308:3306"
     volumes:
       - mysql_users_data:/var/lib/mysql
+    healthcheck: # SỬA LỖI: Thêm kiểm tra sức khỏe
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p0000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   db-topics:
     image: mysql:8.0
@@ -113,6 +149,11 @@ services:
       - "3309:3306"
     volumes:
       - mysql_topics_data:/var/lib/mysql
+    healthcheck: # SỬA LỖI: Thêm kiểm tra sức khỏe
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p0000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   db-tests:
     image: mysql:8.0
@@ -125,6 +166,12 @@ services:
       - "3310:3306"
     volumes:
       - mysql_tests_data:/var/lib/mysql
+    healthcheck: # SỬA LỖI: Thêm kiểm tra sức khỏe
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p0000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   mysql_users_data:
   mysql_topics_data:

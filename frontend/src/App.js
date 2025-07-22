@@ -1,23 +1,22 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './component/auth/ProtectedRoute';
-
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'; // SỬA LỖI: Thêm useLocation
 import Header from './component/header/Header';
 import HomeMenu from './component/home/HomeMenu';
-
 import HomePage from './component/home/HomePage';
-import Login from './component/account/Login';
-import Signup from './component/account/Signup';
 import Topic from './component/learn/Topic';
 import Lesson from './component/learn/Lesson';
+import Flashcard from './component/learn/Flashcard';
 import Test from './component/test/Test';
 import TestStart from './component/test/TestStart';
 import SearchPage from './component/search/SearchPage';
+import Login from './component/account/Login';
+import Signup from './component/account/Signup';
+import Profile from './component/account/Profile';
+import ProtectedRoute from './component/auth/ProtectedRoute';
+import { AuthProvider } from './contexts/AuthContext';
 
-// Component wrapper để kiểm tra location
 const AppLayout = () => {
-  const location = useLocation();
+  const location = useLocation(); // SỬA LỖI: Sử dụng useLocation hook
 
   // Danh sách các route không cần header và sidebar
   const authRoutes = ['/login', '/signup'];
@@ -62,10 +61,26 @@ const AppLayout = () => {
               }
             />
             <Route
+              path="/learn"
+              element={
+                <ProtectedRoute>
+                  <Topic />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/lessons"
               element={
                 <ProtectedRoute>
                   <Lesson />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/flashcard"
+              element={
+                <ProtectedRoute>
+                  <Flashcard />
                 </ProtectedRoute>
               }
             />
@@ -86,6 +101,14 @@ const AppLayout = () => {
               }
             />
             <Route
+              path="/test-start"
+              element={
+                <ProtectedRoute>
+                  <TestStart />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/dotests"
               element={
                 <ProtectedRoute>
@@ -98,6 +121,14 @@ const AppLayout = () => {
               element={
                 <ProtectedRoute>
                   <SearchPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />

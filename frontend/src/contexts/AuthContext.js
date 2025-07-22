@@ -14,45 +14,37 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Load user from localStorage on app start
     useEffect(() => {
-        console.log('AuthProvider: Initializing...');
         const token = localStorage.getItem('token');
         const userData = localStorage.getItem('user');
 
         if (token && userData) {
             try {
-                const parsedUser = JSON.parse(userData);
-                setUser(parsedUser);
-                console.log('AuthProvider: User restored from localStorage', parsedUser);
+                setUser(JSON.parse(userData));
+                console.log('✅ User loaded from localStorage');
             } catch (error) {
-                console.error('AuthProvider: Error parsing user data', error);
+                console.error('❌ Error parsing user data:', error);
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
             }
-        } else {
-            console.log('AuthProvider: No stored credentials found');
         }
         setLoading(false);
     }, []);
 
-    const login = (token, userData) => {
-        console.log('AuthProvider: Login called', { token, userData });
+    const login = (userData, token) => {
+        // SỬA LỖI: Lưu cả user và token
+        setUser(userData);
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(userData));
-        setUser(userData);
+        console.log('✅ User logged in and saved to localStorage');
     };
 
     const logout = () => {
-        console.log('AuthProvider: Logout called');
+        setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        setUser(null);
-    };
-
-    const isAuthenticated = () => {
-        const authenticated = !!user && !!localStorage.getItem('token');
-        console.log('AuthProvider: isAuthenticated check', { user, token: !!localStorage.getItem('token'), result: authenticated });
-        return authenticated;
+        console.log('✅ User logged out and cleared from localStorage');
     };
 
     const value = {
@@ -60,12 +52,8 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         loading,
-        isAuthenticated
+        isAuthenticated: !!user
     };
 
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    );
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

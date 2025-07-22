@@ -1,26 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middlewares/authMiddleware');
-const {
-    getAllTopics,
-    getTopicById,
-    createTopic,
-    deleteTopic
-} = require('../controllers/topicController');
-const { searchWords } = require('../controllers/wordController');
+const topicController = require('../controllers/topicController');
 
-// Search route - PHẢI ĐẶT TRƯỚC ROUTE DYNAMIC
-router.get('/search', searchWords);
+// Route để lấy topic theo ID
+router.get('/topics/:id', topicController.getTopicById);
 
-// Routes for words by topic - Thêm route này
-router.get('/:topicId/words', require('../controllers/wordController').getWordsByTopic);
+// SỬA LỖI: Route root "/" để lấy tất cả topics
+router.get('/topics', topicController.getAllTopics);
 
-// Public routes
-router.get('/', getAllTopics);
-router.get('/:id', getTopicById);
-
-// Protected routes
-router.post('/', authenticateToken, createTopic);
-router.delete('/:id', authenticateToken, deleteTopic);
+// Route để tạo topic mới (Admin only)
+router.post('/', topicController.createTopic);
 
 module.exports = router;

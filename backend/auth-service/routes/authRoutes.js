@@ -8,8 +8,7 @@ router.post('/register', authController.register);
 // POST /auth/login
 router.post('/login', authController.login);
 
-// POST /auth/verify - route verify email
-router.post('/verify', authController.verify);
+
 
 // Health check
 router.get('/health', (req, res) => {

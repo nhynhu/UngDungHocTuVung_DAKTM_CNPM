@@ -7,7 +7,14 @@ const Question = sequelize.define('Question', {
     options: { type: DataTypes.JSON, allowNull: false }, // Array of 4 options
     answer: { type: DataTypes.INTEGER, allowNull: false }, // Index of correct answer (0-3)
     topicId: { type: DataTypes.INTEGER, allowNull: false },
-    TestId: { type: DataTypes.INTEGER, allowNull: false } // Foreign key to Test
+    TestId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'Tests',
+            key: 'id'
+        }
+    }
 });
 
 module.exports = Question;

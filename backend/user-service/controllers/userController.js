@@ -1,36 +1,37 @@
 const User = require('../models/User');
 
 /**
- * Tạo user mới (từ auth-service sau verify)
+ * Create a new user
  */
 exports.createUser = async (req, res) => {
     try {
-        const { email, password, fullname, isVerified = false } = req.body;
+        const { email, password, fullname } = req.body;
+        console.log('👤 Create user request received:', { email, fullname });
 
         // Check if user already exists
-        const existingUser = await User.findOne({ where: { email } });
+        const existingUser = await User.findOne({ where: { email: email.toLowerCase().trim() } });
         if (existingUser) {
-            return res.status(409).json({ error: 'Email already exists' });
+            console.warn(`⚠️ Attempt to create existing user: ${email}`);
+            return res.status(409).json({ message: 'An account with this email already exists.' });
         }
 
+        // Create new user
         const user = await User.create({
-            email,
-            password,
-            fullname,
-            isVerified
+            email: email.toLowerCase().trim(),
+            password, // Password đã được hash từ auth-service
+            fullname
         });
 
-        console.log('✅ User created:', user.email);
-
+        // SỬA LỖI: Trả về thông tin user vừa tạo
         res.status(201).json({
             id: user.id,
             email: user.email,
-            fullname: user.fullname,
-            isVerified: user.isVerified
+            fullname: user.fullname
         });
+
     } catch (error) {
-        console.error('Create user error:', error);
-        res.status(500).json({ error: 'Failed to create user' });
+        console.error('❌ Error creating user in DB:', error);
+        res.status(500).json({ message: 'Failed to create user due to a server error.' });
     }
 };
 

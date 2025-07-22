@@ -19,29 +19,29 @@ const Signup = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
-    // Clear errors when user starts typing
     if (error) setError('');
   };
 
+  // SỬA LỖI: Chuyển validation messages sang tiếng Anh
   const validateForm = () => {
     if (!formData.fullname.trim()) {
-      setError('Vui lòng nhập họ tên');
+      setError('Please enter your full name');
       return false;
     }
     if (!formData.email.trim()) {
-      setError('Vui lòng nhập email');
+      setError('Please enter your email');
       return false;
     }
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      setError('Email không hợp lệ');
+      setError('Please enter a valid email');
       return false;
     }
     if (formData.password.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự');
+      setError('Password must be at least 6 characters');
       return false;
     }
     if (formData.password !== formData.confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp');
+      setError('Password confirmation does not match');
       return false;
     }
     return true;
@@ -63,7 +63,7 @@ const Signup = () => {
       const result = await ApiService.register(submitData);
 
       console.log('✅ Registration successful:', result);
-      setSuccess('Đăng ký thành công! Bạn có thể đăng nhập ngay.');
+      setSuccess('Registration successful! You can now sign in.');
 
       setTimeout(() => {
         navigate('/login');
@@ -71,17 +71,8 @@ const Signup = () => {
 
     } catch (error) {
       console.error('❌ Registration error:', error);
-
-      // Handle different error types
-      if (error.message.includes('timeout')) {
-        setError('Kết nối bị timeout. Vui lòng thử lại.');
-      } else if (error.message.includes('fetch')) {
-        setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối.');
-      } else if (error.message.includes('409') || error.message.includes('already exists')) {
-        setError('Email đã được sử dụng. Vui lòng chọn email khác.');
-      } else {
-        setError(error.message || 'Đăng ký thất bại. Vui lòng thử lại.');
-      }
+      // SỬA LỖI: Hiển thị message lỗi từ server hoặc một message mặc định
+      setError(error.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -93,12 +84,14 @@ const Signup = () => {
         src="/image/Screenshot 2025-07-09 182720.png"
         alt="VocabMafia Logo"
         className="auth-logo-corner"
+        onClick={() => navigate('/')}
+        style={{ cursor: 'pointer' }}
       />
 
       <div className="login-container">
         <div className="auth-card">
           <form className="auth-form" onSubmit={handleSubmit}>
-            <h2 className="text-center mb-4">Đăng ký tài khoản</h2>
+            <h2 className="text-center mb-4">Create Account</h2>
 
             {error && (
               <div className="alert alert-danger">
@@ -113,7 +106,7 @@ const Signup = () => {
             )}
 
             <div className="form-group">
-              <label htmlFor="fullname">Họ tên</label>
+              <label htmlFor="fullname">Full Name</label>
               <input
                 type="text"
                 id="fullname"
@@ -123,12 +116,12 @@ const Signup = () => {
                 required
                 disabled={loading}
                 className="form-control"
-                placeholder="Nhập họ tên của bạn"
+                placeholder="Enter your full name"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Email Address</label>
               <input
                 type="email"
                 id="email"
@@ -138,12 +131,12 @@ const Signup = () => {
                 required
                 disabled={loading}
                 className="form-control"
-                placeholder="Nhập email của bạn"
+                placeholder="Enter your email"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Mật khẩu</label>
+              <label htmlFor="password">Password</label>
               <input
                 type="password"
                 id="password"
@@ -153,12 +146,12 @@ const Signup = () => {
                 required
                 disabled={loading}
                 className="form-control"
-                placeholder="Nhập mật khẩu"
+                placeholder="Enter your password"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirmPassword">Xác nhận mật khẩu</label>
+              <label htmlFor="confirmPassword">Confirm Password</label>
               <input
                 type="password"
                 id="confirmPassword"
@@ -168,7 +161,7 @@ const Signup = () => {
                 required
                 disabled={loading}
                 className="form-control"
-                placeholder="Nhập lại mật khẩu"
+                placeholder="Confirm your password"
               />
             </div>
 
@@ -177,19 +170,19 @@ const Signup = () => {
               disabled={loading}
               className="btn-auth"
             >
-              {loading ? 'Đang xử lý...' : 'Đăng ký'}
+              {loading ? 'Creating account...' : 'Sign Up'}
             </button>
 
             <div className="auth-footer">
               <p>
-                Đã có tài khoản?{' '}
+                Already have an account?{' '}
                 <button
                   type="button"
                   className="link-btn"
                   onClick={() => navigate('/login')}
                   disabled={loading}
                 >
-                  Đăng nhập ngay
+                  Sign in now
                 </button>
               </p>
             </div>

@@ -52,7 +52,7 @@ const SearchPage = () => {
   return (
     <Container className="mt-4">
       <div className="text-center mb-4">
-        <h2>🔍 Tìm kiếm nâng cao</h2>
+        <h2>Tìm kiếm nâng cao</h2>
         <p className="text-muted">Tìm kiếm từ vựng và chủ đề trong hệ thống</p>
       </div>
 
@@ -199,7 +199,7 @@ const SearchPage = () => {
             ) : (
               <Col xs={12}>
                 <Alert variant="info" className="text-center">
-                  <h5>🤷‍♂️ Không tìm thấy kết quả</h5>
+                  <h5>Không tìm thấy kết quả</h5>
                   <p>Không có kết quả nào cho từ khóa "<strong>{query}</strong>"</p>
                   <div className="mt-3">
                     <p className="mb-2">Gợi ý:</p>

@@ -60,7 +60,7 @@ const Lesson = () => {
     return (
       <Container className="mt-5">
         <Alert variant="danger" className="text-center">
-          <Alert.Heading>⚠️ Lỗi</Alert.Heading>
+          <Alert.Heading>Lỗi</Alert.Heading>
           <p>{error}</p>
           <div className="mt-3">
             <Button variant="outline-primary" onClick={() => navigate('/topics')}>
@@ -80,13 +80,13 @@ const Lesson = () => {
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h2>📖 {topicInfo?.nameVi || topicInfo?.name || 'Bài học từ vựng'}</h2>
+          <h2>{topicInfo?.nameVi || topicInfo?.name || 'Bài học từ vựng'}</h2>
           <p className="text-muted mb-0">
             Có {words.length} từ vựng trong chủ đề này
           </p>
         </div>
         <Button variant="outline-secondary" onClick={() => navigate('/topics')}>
-          📚 Chọn chủ đề khác
+          Chọn chủ đề khác
         </Button>
       </div>
 
@@ -112,19 +112,19 @@ const Lesson = () => {
               variant="primary"
               onClick={() => navigate(`/flashcard?topicId=${topicId}`)}
             >
-              🃏 Luyện tập Flashcard
+              Luyện tập Flashcard
             </Button>
             <Button
               variant="success"
               onClick={() => navigate(`/test?topicId=${topicId}`)}
             >
-              📝 Làm bài test
+              Làm bài test
             </Button>
             <Button
               variant="outline-secondary"
               onClick={() => navigate('/topics')}
             >
-              📚 Chọn chủ đề khác
+              Chọn chủ đề khác
             </Button>
           </div>
         </div>

@@ -7,24 +7,32 @@ const { Op } = require('sequelize');
  */
 exports.getWordsByTopic = async (req, res) => {
     try {
+        const { topicId } = req.params;
+
+        console.log(`🔍 Getting words for topic: ${topicId}`);
+
+        // SỬA LỖI: Không dùng include để tránh alias conflict
         const words = await Word.findAll({
-            where: { TopicId: req.params.topicId },
-            include: [{ model: Topic, attributes: ['name', 'nameVi'] }]
+            where: { TopicId: topicId },
+            order: [['english', 'ASC']]
         });
 
-        // Format cho Flashcards component
-        const flashcards = words.map(word => ({
+        console.log(`📝 Found ${words.length} words for topic ${topicId}`);
+
+        // Format cho frontend
+        const formattedWords = words.map(word => ({
             id: word.id,
-            front: word.english,      // Mặt trước flashcard
-            back: word.vietnamese,    // Mặt sau flashcard
             english: word.english,
             vietnamese: word.vietnamese,
-            topic: word.Topic?.nameVi || word.Topic?.name || 'Unknown'
+            front: word.english,
+            back: word.vietnamese,
+            TopicId: word.TopicId
         }));
 
-        res.json(flashcards);
+        res.json(formattedWords);
+
     } catch (err) {
-        console.error('Get words by topic error:', err);
+        console.error('❌ Get words by topic error:', err);
         res.status(500).json({ error: err.message });
     }
 };

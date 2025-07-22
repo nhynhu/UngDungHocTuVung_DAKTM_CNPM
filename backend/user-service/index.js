@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { sequelize } = require('./models');
-const userRoutes = require('./routes/userRoutes'); // ⬅️ SỬA: userRoutes không phải userRoute
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5004;
@@ -26,30 +26,37 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Database connection
-const connectDB = async () => {
-    for (let i = 0; i < 10; i++) {
-        try {
-            await sequelize.authenticate();
-            console.log('👤 User Service DB connected');
-
-            await sequelize.sync({ alter: true });
-            console.log('👤 User Service DB synced');
-
-            app.listen(PORT, () => {
-                console.log(`👤 User Service running on port ${PORT}`);
-            });
-            return;
-        } catch (error) {
-            console.log(`❌ User Service DB connection attempt ${i + 1} failed:`, error.message);
-            if (i < 9) {
-                console.log('⏳ Retrying in 5 seconds...');
-                await new Promise(resolve => setTimeout(resolve, 5000));
-            }
-        }
-    }
-    console.error('❌ User Service failed to connect to database after 10 attempts');
-    process.exit(1);
+// SỬA LỖI: Tách logic kết nối và khởi động server
+const startServer = () => {
+    app.listen(PORT, () => {
+        console.log(`✅ User Service is ready and listening on port ${PORT}`);
+    });
 };
 
-connectDB();
+const connectWithRetry = async (retries = 5, delay = 5000) => {
+    while (retries > 0) {
+        try {
+            console.log('👤 Attempting to connect to User Service DB...');
+            await sequelize.authenticate();
+            console.log('✅ DB Authenticated successfully.');
+
+            console.log('🔄 Syncing database models...');
+            await sequelize.sync({ alter: true }); // Dùng alter để không mất dữ liệu
+            console.log('✅ Database synced successfully.');
+
+            startServer(); // Chỉ khởi động server sau khi mọi thứ sẵn sàng
+            return;
+        } catch (err) {
+            retries--;
+            console.error(`❌ DB connection failed. ${retries} retries left.`, err.message);
+            if (retries === 0) {
+                console.error('❌ Could not connect to the database after multiple retries. Exiting.');
+                process.exit(1);
+            }
+            await new Promise(res => setTimeout(res, delay));
+        }
+    }
+};
+
+// Bắt đầu quá trình kết nối
+connectWithRetry();

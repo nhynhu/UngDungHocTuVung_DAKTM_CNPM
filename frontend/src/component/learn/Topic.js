@@ -42,9 +42,17 @@ const Topic = () => {
     return (
       <Container className="mt-5">
         <Alert variant="danger" className="text-center">
-          <Alert.Heading>⚠️ Lỗi kết nối</Alert.Heading>
-          <p>{error}</p>
-          <Button variant="outline-danger" onClick={() => window.location.reload()}>
+          <Alert.Heading>Lỗi kết nối</Alert.Heading>
+          <p>
+            Không thể tải danh sách chủ đề. Dịch vụ có thể đang gặp sự cố.
+            <br />
+            Vui lòng thử lại sau.
+          </p>
+          <hr />
+          <p className="mb-0 fst-italic small">
+            Chi tiết lỗi: {error}
+          </p>
+          <Button variant="outline-danger" onClick={() => window.location.reload()} className="mt-3">
             Thử lại
           </Button>
         </Alert>
@@ -55,27 +63,31 @@ const Topic = () => {
   return (
     <Container className="mt-4">
       <div className="text-center mb-4">
-        <h2>📚 Chọn chủ đề học từ vựng</h2>
+        <h2>Chọn chủ đề học từ vựng</h2>
         <p className="text-muted">Có {topics.length} chủ đề để bạn khám phá</p>
       </div>
 
       <Row>
         {topics.length > 0 ? (
-          topics.map((topic) => (
-            <Col key={topic.id} lg={4} md={6} sm={12} className="mb-4">
-              <TopicCard
-                title={topic.title || topic.name}
-                img={topic.img}
-                text={topic.text}
-                link={topic.link}
-                wordCount={topic.wordCount}
-              />
-            </Col>
-          ))
+          topics.map((topic) => {
+            console.log(`🔍 Topic image URL: ${topic.image}`); // SỬA LỖI: Debug URL
+
+            return (
+              <Col key={topic.id} lg={4} md={6} sm={12} className="mb-4">
+                <TopicCard
+                  title={topic.nameVi || topic.name}
+                  img={topic.image ? `http://localhost:8000${topic.image}` : 'http://localhost:8000/uploads/default-topic.jpg'}
+                  text={topic.description || `Học từ vựng về ${topic.nameVi || topic.name}`}
+                  topicId={topic.id}
+                  wordCount={topic.wordCount}
+                />
+              </Col>
+            );
+          })
         ) : (
           <Col xs={12}>
             <Alert variant="info" className="text-center">
-              <h5>📝 Chưa có chủ đề nào</h5>
+              <h5>Chưa có chủ đề nào</h5>
               <p>Hệ thống đang được cập nhật. Vui lòng quay lại sau.</p>
             </Alert>
           </Col>

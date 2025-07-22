@@ -1,4 +1,5 @@
 const Question = require('../models/Question');
+const Test = require('../models/Test');
 const { sequelize } = require('../models');  // <-- phải import instance chứ không phải thư viện
 
 /**
@@ -6,13 +7,38 @@ const { sequelize } = require('../models');  // <-- phải import instance chứ
  */
 exports.getQuestionsByTopic = async (req, res) => {
     try {
-        const { topicId } = req.params;
         const questions = await Question.findAll({
-            where: { topicId }
+            where: { topicId: req.params.topicId }
         });
-
         res.json(questions);
     } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+/**
+ * SỬA LỖI: Thêm hàm createQuestion còn thiếu
+ * Tạo một câu hỏi mới (Admin only)
+ */
+exports.createQuestion = async (req, res) => {
+    try {
+        const { content, options, answer, topicId, TestId } = req.body;
+
+        if (!content || !options || answer == null || !topicId || !TestId) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        const newQuestion = await Question.create({
+            content,
+            options,
+            answer,
+            topicId,
+            TestId
+        });
+
+        res.status(201).json(newQuestion);
+    } catch (err) {
+        console.error('Create question error:', err);
         res.status(500).json({ error: err.message });
     }
 };

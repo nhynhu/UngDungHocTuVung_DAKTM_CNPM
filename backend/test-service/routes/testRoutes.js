@@ -1,16 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middlewares/authMiddleware');
+const testController = require('../controllers/testController');
 
 // Import ALL functions properly
 const {
     getAllTests,
     getTest,
     submitTest,
-    getUserResults
 } = require('../controllers/testController');
 
-// Health check function - define directly or import
+// Health check function
 const healthCheck = (req, res) => {
     res.json({
         service: 'test-service-routes',
@@ -19,23 +19,18 @@ const healthCheck = (req, res) => {
     });
 };
 
-// ==================== STATIC ROUTES FIRST ====================
+// ==================== ROUTES ====================
 
-// Health check route - use defined function
-router.get('/health', healthCheck);
+// SỬA LỖI: Route ROOT "/" để lấy tất cả tests (match với proxy path rewrite)
+router.get('/tests', testController.getAllTests); // /tests -> getAllTests
 
-// Submit test results
-router.post('/submit', authenticateToken, submitTest);
+// Submit test results  
+router.post('/submit', submitTest);
 
-// Get all tests
-router.get('/all', getAllTests);
-
-// User history
-router.get('/user/history', authenticateToken, getUserResults);
-
-// ==================== DYNAMIC ROUTES LAST ====================
-
-// Get test questions for a specific topic (MUST BE LAST)
+// Get test questions for a specific topic
 router.get('/:topicId', authenticateToken, getTest);
+
+// Health check route
+router.get('/health', healthCheck);
 
 module.exports = router;

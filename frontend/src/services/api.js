@@ -1,105 +1,93 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
-class ApiService {
-    constructor() {
-        this.baseURL = 'http://localhost:8000/api';
-        this.timeout = 30000;
-    }
+// LẤY TOKEN
+const getAuthToken = () => {
+    return localStorage.getItem('token');
+};
 
-    async makeRequest(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`;
+// SỬA LỖI: Improved error handling
+const makeRequest = async (endpoint, method = 'GET', body = null) => {
+    const url = `${API_BASE_URL}${endpoint}`;
+
+    const controller = new AbortController();
+    // SỬA LỖI: Tăng timeout lên 30 giây để cho backend có thời gian khởi động
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
+    try {
+        console.log(`🌐 API ${method} Request:`, url, body ? { body } : '');
 
         const config = {
-            method: 'GET',
+            method,
             headers: {
                 'Content-Type': 'application/json',
-                ...options.headers,
+                ...(getAuthToken() && { 'Authorization': `Bearer ${getAuthToken()}` })
             },
-            ...options,
+            signal: controller.signal
         };
 
-        console.log('🚀 API Request:', url, config);
-
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
-            const response = await fetch(url, {
-                ...config,
-                signal: controller.signal
-            });
-
-            clearTimeout(timeoutId);
-
-            console.log('📡 Response status:', response.status);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('❌ API Error Response:', errorText);
-                throw new Error(errorText || `HTTP ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log('✅ API Success:', data);
-            return data;
-
-        } catch (error) {
-            console.error('❌ API Request Failed:', error);
-            if (error.name === 'AbortError') {
-                throw new Error('Request timeout - server không phản hồi');
-            }
-            throw error;
+        if (body) {
+            config.body = JSON.stringify(body);
         }
-    }
 
-    // Auth methods
-    async register(userData) {
-        return this.makeRequest('/auth/register', {
-            method: 'POST',
-            body: JSON.stringify(userData),
-        });
-    }
+        const response = await fetch(url, config);
+        clearTimeout(timeoutId);
 
-    async login(credentials) {
-        return this.makeRequest('/auth/login', {
-            method: 'POST',
-            body: JSON.stringify(credentials),
-        });
-    }
+        // SỬA LỖI: Xử lý trường hợp response không phải JSON (ví dụ: lỗi 5xx trả về HTML)
+        const contentType = response.headers.get("content-type");
+        if (!response.ok) {
+            let errorData = { message: `Request failed with status ${response.status}` };
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                errorData = await response.json();
+            }
+            throw new Error(errorData.message || `An unexpected error occurred.`);
+        }
 
-    // Topics methods
-    async getAllTopics() {
-        return this.makeRequest('/topics');
-    }
+        // Nếu không có content thì trả về object rỗng
+        if (response.status === 204 || !contentType || !contentType.includes('application/json')) {
+            return {};
+        }
 
-    async getTopicById(id) {
-        return this.makeRequest(`/topics/${id}`);
-    }
+        return await response.json();
 
-    async getWordsByTopic(topicId) {
-        return this.makeRequest(`/topics/${topicId}/words`);
-    }
+    } catch (error) {
+        clearTimeout(timeoutId);
 
-    // Search methods
-    async searchWords(query, type = 'all') {
-        return this.makeRequest(`/topics/search?q=${encodeURIComponent(query)}&type=${type}`);
-    }
+        if (error.name === 'AbortError') {
+            console.error('❌ API Request timeout');
+            throw new Error('Server is taking too long to respond. This might happen on the first start. Please try again.');
+        }
 
-    // Test methods
-    async getAllTests() {
-        return this.makeRequest('/tests');
+        console.error('❌ API Request Failed:', error.message);
+        throw error;
     }
+};
 
-    async getTestQuestions(testId) {
-        return this.makeRequest(`/tests/${testId}/questions`);
-    }
+// Xóa hàm handleApiError không cần thiết này
+// const handleApiError = (error) => { ... };
 
-    async submitTest(testData) {
-        return this.makeRequest('/tests/submit', {
-            method: 'POST',
-            body: JSON.stringify(testData),
-        });
-    }
-}
+// Tạo và export một đối tượng ApiService làm default
+const ApiService = {
+    // Auth
+    login: (credentials) => makeRequest('/auth/login', 'POST', credentials),
+    // SỬA LỖI: Sử dụng makeRequest để nhất quán và sửa lỗi 'api is not defined'
+    register: (userData) => makeRequest('/auth/register', 'POST', userData),
+    verify: (token) => makeRequest('/auth/verify', 'POST', { token }),
 
-export default new ApiService();
+    // Topics
+    getAllTopics: () => makeRequest('/topics'),
+    getTopicById: (id) => makeRequest(`/topics/${id}`),
+
+    // Words
+    getWordsByTopic: (topicId) => makeRequest(`/words/topic/${topicId}`),
+    searchWords: (query) => makeRequest(`/words/search?q=${query}`),
+
+    // Tests
+    getAllTests: () => makeRequest('/tests'),
+    getTestQuestions: (testId) => makeRequest(`/tests/${testId}`),
+    submitTest: (submission) => makeRequest('/tests/submit', 'POST', submission),
+
+    // User
+    getUserHistory: (userId, token) => makeRequest(`/users/${userId}/history`, 'GET', null, token),
+};
+
+export default ApiService;

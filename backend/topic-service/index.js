@@ -9,7 +9,8 @@ const topicRoutes = require('./routes/topicRoutes');
 const wordRoutes = require('./routes/wordRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 5005; // SỬA: 5505 -> 5005
+// SỬA LỖI: Đảm bảo cổng luôn là 5005 nếu không có biến môi trường
+const PORT = process.env.PORT || 5005;
 
 // Middleware
 app.use(cors({
@@ -19,10 +20,30 @@ app.use(cors({
 app.use(express.json());
 
 // Serve static files from uploads
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// SỬA LỖI: Đường dẫn đúng tới thư mục uploads trong container là 'uploads' (tương đối với /app)
+app.use('/uploads', (req, res, next) => {
+    console.log(`📁 Static file request: ${req.originalUrl}`);
+
+    // Set MIME type cho SVG files
+    if (req.path.endsWith('.svg') || req.path.endsWith('.jpg') || req.path.endsWith('.png')) {
+        if (req.path.includes('.svg') || req.get('Accept')?.includes('image/svg')) {
+            res.setHeader('Content-Type', 'image/svg+xml');
+        } else {
+            res.setHeader('Content-Type', 'image/jpeg');
+        }
+    }
+
+    next();
+}, express.static(path.join(__dirname, 'uploads')));
+
+// Request logging
+app.use((req, res, next) => {
+    console.log(`📚 Topic Service: ${req.method} ${req.originalUrl}`);
+    next();
+});
 
 // Routes
-app.use('/topics', topicRoutes);
+app.use('/', topicRoutes);  // SỬA LỖI: Đảm bảo có dòng này
 app.use('/words', wordRoutes);
 
 // Health check
@@ -34,9 +55,12 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Define associations
+// Define associations - SỬA LỖI: Không tạo thêm TopicId vì đã có sẵn
 Topic.hasMany(Word, {
-    foreignKey: 'TopicId',
+    foreignKey: {
+        name: 'TopicId',
+        allowNull: false
+    },
     as: 'words'
 });
 
@@ -52,7 +76,8 @@ const connectDB = async () => {
             await sequelize.authenticate();
             console.log('📚 Topic Service DB connected');
 
-            await sequelize.sync({ alter: true });
+            // SỬA LỖI: Sử dụng { force: true } để reset database hoàn toàn
+            await sequelize.sync({ force: true });
             console.log('📚 Topic Service DB synced');
 
             app.listen(PORT, () => {
