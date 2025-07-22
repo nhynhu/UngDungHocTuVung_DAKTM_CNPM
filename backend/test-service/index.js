@@ -5,10 +5,7 @@ const { sequelize } = require('./models');
 const Test = require('./models/Test');
 const Question = require('./models/Question');
 const Result = require('./models/Result');
-// SỬA LỖI: Import đúng cách từ authMiddleware
-const { authenticateToken } = require('./middlewares/authMiddleware'); // ✅ ĐÚNG
 
-// Import routes
 const testRoutes = require('./routes/testRoutes');
 const questionRoutes = require('./routes/questionRoutes');
 const resultRoutes = require('./routes/resultRoutes');
@@ -16,26 +13,20 @@ const resultRoutes = require('./routes/resultRoutes');
 const app = express();
 const PORT = process.env.PORT || 5006;
 
-// Middleware
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true
 }));
 app.use(express.json());
 
-// Request logging
 app.use((req, res, next) => {
     console.log(`📝 Test Service: ${req.method} ${req.originalUrl}`);
     next();
 });
 
-// SỬA LỖI: Sửa lại routes order
-// Public routes trước
-app.use('/', testRoutes); // Đúng, sẽ nhận /tests
-
-// Protected routes sau
-app.use('/questions', authenticateToken, questionRoutes);
-app.use('/results', authenticateToken, resultRoutes);
+app.use('/', testRoutes);
+app.use('/questions', questionRoutes);
+app.use('/results', resultRoutes);
 
 // Định nghĩa relationships
 Test.hasMany(Question, {

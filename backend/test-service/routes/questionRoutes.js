@@ -1,9 +1,7 @@
 const express = require('express');
-const { getQuestionsByTopic, createQuestion } = require('../controllers/questionController');
-const { authenticateToken } = require('../middlewares/authMiddleware');
+const { getQuestionsByTopic } = require('../controllers/questionController_optimized');
 const router = express.Router();
 
 router.get('/:topicId', getQuestionsByTopic);
-router.post('/', authenticateToken, createQuestion);
 
 module.exports = router;

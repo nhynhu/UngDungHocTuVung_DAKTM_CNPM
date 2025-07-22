@@ -120,14 +120,10 @@ exports.testConnection = async (req, res) => {
     }
 };
 
-/**
- * Health check
- */
 exports.healthCheck = (req, res) => {
     res.json({
         service: 'mail-service',
         status: 'healthy',
-        timestamp: new Date().toISOString(),
-        configured: !!process.env.EMAIL
+        timestamp: new Date().toISOString()
     });
 };

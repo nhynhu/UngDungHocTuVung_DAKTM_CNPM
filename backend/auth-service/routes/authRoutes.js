@@ -1,19 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
+const authController = require('../controllers/authController_optimized');
 
-// POST /auth/register (được gọi từ API Gateway: /api/auth/register)
 router.post('/register', authController.register);
-
-// POST /auth/login
 router.post('/login', authController.login);
 
-
-
-// Health check
 router.get('/health', (req, res) => {
     res.json({
-        service: 'auth-routes',
+        service: 'auth-service',
         status: 'healthy',
         timestamp: new Date().toISOString()
     });

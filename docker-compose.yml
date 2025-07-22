@@ -29,7 +29,6 @@ services:
       - user-service
       - topic-service
       - test-service
-      - mail-service
     restart: unless-stopped
 
   # ==================== MICROSERVICES ====================
@@ -46,21 +45,6 @@ services:
       - JWT_EXPIRES_IN=1d
     depends_on: # Auth service cần user-service hoạt động
       - user-service
-    restart: unless-stopped
-
-  mail-service:
-    build:
-      context: ./backend/mail-service
-      dockerfile: Dockerfile
-    ports:
-      - "5002:5002"
-    environment:
-      - NODE_ENV=production
-      - MAIL_HOST=smtp.gmail.com
-      - MAIL_PORT=587
-      - EMAIL=duongbaokhanh123tv@gmail.com
-      - EMAIL_PASS=inrpcnnqellosqdk
-      - MAIL_FROM="VocabMafia <noreply@vocabmafia.com>"
     restart: unless-stopped
 
   user-service:

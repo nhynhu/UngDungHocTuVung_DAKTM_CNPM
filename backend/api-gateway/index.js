@@ -6,30 +6,23 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Service URLs
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://auth-service:5001';
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://user-service:5004';
 const TOPIC_SERVICE_URL = process.env.TOPIC_SERVICE_URL || 'http://topic-service:5005';
 const TEST_SERVICE_URL = process.env.TEST_SERVICE_URL || 'http://test-service:5006';
 
-// Middleware
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true
 }));
 
-// CHỈ dùng express.json() cho các route KHÔNG proxy
 app.use('/health', express.json());
 
-// KHÔNG dùng app.use(express.json()) cho toàn bộ app!
-
-// Request logging
 app.use((req, res, next) => {
     console.log(`🌐 API Gateway: ${req.method} ${req.originalUrl}`);
     next();
 });
 
-// Proxy options
 const proxyOptions = {
     changeOrigin: true,
     timeout: 30000,
@@ -47,7 +40,6 @@ const proxyOptions = {
     }
 };
 
-// Auth service proxy
 app.use('/api/auth', createProxyMiddleware({
     target: AUTH_SERVICE_URL,
     pathRewrite: { '^/api/auth': '/auth' },
@@ -62,45 +54,38 @@ app.use('/api/auth', createProxyMiddleware({
     ...proxyOptions
 }));
 
-// User service proxy
 app.use('/api/users', createProxyMiddleware({
     target: USER_SERVICE_URL,
     pathRewrite: { '^/api/users': '/users' },
     ...proxyOptions
 }));
 
-// Topic service proxy
 app.use('/api/topics', createProxyMiddleware({
     target: TOPIC_SERVICE_URL,
     pathRewrite: { '^/api/topics': '/topics' },
     ...proxyOptions
 }));
 
-// Test service proxy
 app.use('/api/tests', createProxyMiddleware({
     target: TEST_SERVICE_URL,
     pathRewrite: (path, req) => {
-        // Giữ nguyên /api/tests, /api/tests/ và /api/tests/abc -> /tests, /tests/, /tests/abc
         return path.replace(/^\/api\/tests(\/|$)/, '/tests$1');
     },
     ...proxyOptions
 }));
 
-// Static files proxy
 app.use('/uploads', createProxyMiddleware({
     target: TOPIC_SERVICE_URL,
     pathRewrite: { '^/uploads': '/uploads' },
     ...proxyOptions
 }));
 
-// Words service proxy
 app.use('/api/words', createProxyMiddleware({
     target: TOPIC_SERVICE_URL,
     pathRewrite: { '^/api/words': '/words' },
     ...proxyOptions
 }));
 
-// Health check
 app.get('/health', (req, res) => {
     res.json({
         service: 'api-gateway',
@@ -115,7 +100,6 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Start server
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🌐 API Gateway running on port ${PORT}`);
     console.log(`📍 Proxy routes:`);
