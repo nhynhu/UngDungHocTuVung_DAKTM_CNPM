@@ -51,13 +51,11 @@ const TestStart = () => {
   const handleSubmit = async () => {
     try {
       setSubmitting(true);
-      // Đảm bảo answers là mảng số (index), đúng thứ tự câu hỏi
-      const answersArray = questions.map(q => {
-        // Nếu người dùng chưa chọn thì null
-        if (selectedAnswers[q.id] === undefined || selectedAnswers[q.id] === null) return null;
-        // Luôn gửi index theo mảng options đã nhận từ BE
-        return selectedAnswers[q.id];
-      });
+      // Chuẩn hóa answers thành mảng object {questionId, selectedOption}
+      const answersArray = questions.map(q => ({
+        questionId: q.id,
+        selectedOption: selectedAnswers[q.id] ?? null
+      }));
       const response = await ApiService.submitTest({
         testId,
         userId: user?.id,

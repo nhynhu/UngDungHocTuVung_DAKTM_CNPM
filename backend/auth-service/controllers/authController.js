@@ -131,12 +131,32 @@ exports.login = async (req, res) => {
         // Remove password from response
         delete user.password;
 
+
+        // Lấy số bài test đã làm từ user-service
+        let testsTaken = 0;
+        try {
+            const testsRes = await axios.get(`${USER_SERVICE_URL}/users/${user.id}/tests/count`, { timeout: 10000 });
+            testsTaken = testsRes.data?.count ?? 0;
+        } catch (err) {
+            console.error('❌ Không lấy được số bài test đã làm:', err.message);
+        }
+
+        // Trả về đầy đủ thông tin user cho FE
+        const userInfo = {
+            id: user.id,
+            email: user.email,
+            fullname: user.fullname,
+            isVerified: user.isVerified ?? false,
+            createdAt: user.createdAt ?? null,
+            testsTaken
+        };
+
         console.log('✅ Login successful:', { email });
         res.json({
             success: true,
             message: 'Login successful',
             token,
-            user
+            user: userInfo
         });
 
     } catch (error) {

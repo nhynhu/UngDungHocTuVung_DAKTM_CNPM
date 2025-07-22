@@ -88,6 +88,8 @@ const ApiService = {
 
     // User
     getUserHistory: (userId, token) => makeRequest(`/users/${userId}/history`, 'GET', null, token),
+    getUserProfile: (userId) => makeRequest(`/users/${userId}/profile`),
+    getUserTestsCount: (userId) => makeRequest(`/users/${userId}/tests/count`),
 };
 
 export default ApiService;

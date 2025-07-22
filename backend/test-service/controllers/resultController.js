@@ -12,7 +12,18 @@ exports.submitTest = async (req, res) => {
             if (userAnswer && userAnswer === q.answer) score += 10;
         }
 
-        const result = await Result.create({ userId, testId, score });
+        // Truyền đủ các trường bắt buộc
+        const totalQuestions = questions.length;
+        const timeTaken = req.body.timeTaken ?? 0;
+        const pass = score >= (totalQuestions * 10 * 0.6); // ví dụ: qua nếu >=60%
+        const result = await Result.create({
+            userId,
+            testId,
+            score,
+            totalQuestions,
+            timeTaken,
+            pass
+        });
         res.json({ score });
     } catch (err) {
         res.status(500).json({ error: err.message });

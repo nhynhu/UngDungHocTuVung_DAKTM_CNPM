@@ -57,7 +57,10 @@ const Login = () => {
       console.log('✅ Login successful:', { user: result.user?.email });
 
       login(result.user, result.token);
-
+      // Lưu userId vào localStorage để trang profile dùng
+      if (result.user?.id) {
+        localStorage.setItem('userId', result.user.id);
+      }
       // SỬA LỖI: Navigate sau khi state đã update
       setTimeout(() => {
         navigate('/', { replace: true });
