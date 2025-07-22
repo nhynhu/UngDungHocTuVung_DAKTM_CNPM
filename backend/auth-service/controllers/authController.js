@@ -1,6 +1,6 @@
-const axios = require('axios');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://user-service:5004';
 
 exports.register = async (req, res) => {
@@ -17,9 +17,10 @@ exports.register = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 12);
 
+        // Tạo user qua user-service
         const response = await axios.post(
             `${USER_SERVICE_URL}/users`,
-            { email: email.toLowerCase().trim(), password: hashedPassword, fullname: fullname.trim() },
+            { email: email.toLowerCase().trim(), password: hashedPassword, fullname: fullname.trim(), isVerified: false },
             { timeout: 10000 }
         );
 
@@ -30,9 +31,20 @@ exports.register = async (req, res) => {
             return res.status(500).json({ message: 'User service returned invalid data.' });
         }
 
+        // Tạo token xác thực
+        const token = jwt.sign({ email: userData.email }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '15m' });
+        const verificationLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify?token=${token}`;
+
+        // Gọi mail-service gửi mail xác thực
+        await axios.post(
+            `${process.env.MAIL_SERVICE_URL}/mail/send-verification`,
+            { to: userData.email, username: fullname, verificationLink },
+            { timeout: 10000 }
+        );
+
         console.log('✅ User created via user-service:', userData.email);
         return res.status(201).json({
-            message: 'Registration successful',
+            message: 'Registration successful. Please check your email to verify your account.',
             user: {
                 id: userData.id,
                 email: userData.email,
@@ -156,6 +168,21 @@ exports.login = async (req, res) => {
             success: false,
             message: 'Login failed. Please try again.'
         });
+    }
+};
+
+exports.verifyEmail = async (req, res) => {
+    const { token } = req.body;
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const email = decoded.email;
+        // Cập nhật user isVerified qua user-service
+        await axios.put(process.env.USER_SERVICE_URL + `/users/email/${encodeURIComponent(email)}/verify`, {
+            isVerified: true
+        });
+        res.json({ message: 'Email verified successfully!' });
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid or expired token.' });
     }
 };
 

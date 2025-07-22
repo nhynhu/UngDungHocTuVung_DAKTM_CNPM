@@ -29,6 +29,7 @@ services:
       - user-service
       - topic-service
       - test-service
+      - mail-service
     restart: unless-stopped
 
   # ==================== MICROSERVICES ====================
@@ -43,8 +44,23 @@ services:
       - USER_SERVICE_URL=http://user-service:5004
       - JWT_SECRET=secretkey
       - JWT_EXPIRES_IN=1d
-    depends_on: # Auth service cần user-service hoạt động
+    depends_on:
       - user-service
+    restart: unless-stopped
+
+  mail-service:
+    build:
+      context: ./backend/mail-service
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    environment:
+      - NODE_ENV=production
+      - EMAIL=duongbaokhanh123tv@gmail.com
+      - EMAIL_PASS=inrpcnnqellosqdk
+      - FRONTEND_URL=http://localhost:3000
+      - APP_NAME=English Learning App
+      - JWT_SECRET=secretkey
     restart: unless-stopped
 
   user-service:
@@ -63,7 +79,7 @@ services:
       - DB_PORT=3306
     depends_on:
       db-users:
-        condition: service_healthy # SỬA LỖI: Chờ cho đến khi DB sẵn sàng
+        condition: service_healthy 
     restart: unless-stopped
 
   topic-service:
@@ -101,7 +117,7 @@ services:
       - DB_PORT=3306
     depends_on:
       db-tests:
-        condition: service_healthy # SỬA LỖI: Chờ cho đến khi DB sẵn sàng
+        condition: service_healthy
     restart: unless-stopped
 
   # ==================== DATABASES ====================
@@ -116,7 +132,7 @@ services:
       - "3308:3306"
     volumes:
       - mysql_users_data:/var/lib/mysql
-    healthcheck: # SỬA LỖI: Thêm kiểm tra sức khỏe
+    healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p0000"]
       interval: 10s
       timeout: 5s
@@ -133,7 +149,7 @@ services:
       - "3309:3306"
     volumes:
       - mysql_topics_data:/var/lib/mysql
-    healthcheck: # SỬA LỖI: Thêm kiểm tra sức khỏe
+    healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p0000"]
       interval: 10s
       timeout: 5s
@@ -150,7 +166,7 @@ services:
       - "3310:3306"
     volumes:
       - mysql_tests_data:/var/lib/mysql
-    healthcheck: # SỬA LỖI: Thêm kiểm tra sức khỏe
+    healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p0000"]
       interval: 10s
       timeout: 5s
