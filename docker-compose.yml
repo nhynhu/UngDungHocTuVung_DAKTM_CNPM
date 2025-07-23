@@ -60,7 +60,6 @@ services:
       - EMAIL_PASS=inrpcnnqellosqdk
       - FRONTEND_URL=http://localhost:3000
       - APP_NAME=English Learning App
-      - JWT_SECRET=secretkey
     restart: unless-stopped
 
   user-service:

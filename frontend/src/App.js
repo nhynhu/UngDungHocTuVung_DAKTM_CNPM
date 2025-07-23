@@ -11,6 +11,9 @@ import TestStart from './component/test/TestStart';
 import SearchPage from './component/search/SearchPage';
 import Login from './component/account/Login';
 import Signup from './component/account/Signup';
+import ForgotPassword from './component/account/ForgotPassword'; // Nhập ForgotPassword component
+import VerifyEmail from './component/account/VerifyEmail';
+import ResetPassword from './component/account/ResetPassword';
 import ProtectedRoute from './component/auth/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -18,7 +21,7 @@ const AppLayout = () => {
   const location = useLocation(); // SỬA LỖI: Sử dụng useLocation hook
 
   // Danh sách các route không cần header và sidebar
-  const authRoutes = ['/login', '/signup'];
+  const authRoutes = ['/login', '/signup', '/forgot-password'];
   const isAuthRoute = authRoutes.includes(location.pathname);
 
   return (
@@ -50,6 +53,9 @@ const AppLayout = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} /> {/* Đường dẫn mới cho ForgotPassword */}
+            <Route path="/verify" element={<VerifyEmail />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             <Route
               path="/topics"

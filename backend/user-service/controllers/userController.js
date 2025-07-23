@@ -44,3 +44,34 @@ exports.getUserByEmail = async (req, res) => {
         res.status(500).json({ error: 'Failed to get user' });
     }
 };
+exports.verifyEmail = async (req, res) => {
+    const email = req.params.email;
+    console.log('🔎 Xác thực email:', email);
+    try {
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            console.warn('❌ Không tìm thấy user:', email);
+            return res.status(404).json({ message: 'User not found' });
+        }
+        user.isVerified = true;
+        await user.save();
+        res.json({ message: 'User verified!' });
+    } catch (err) {
+        console.error('❌ Lỗi xác thực:', err);
+        res.status(500).json({ message: 'Verification failed.' });
+    }
+};
+
+exports.resetPassword = async (req, res) => {
+    const email = req.params.email;
+    const { password } = req.body;
+    try {
+        const user = await User.findOne({ where: { email } });
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        user.password = password;
+        await user.save();
+        res.json({ message: 'Password updated!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Password update failed.' });
+    }
+};

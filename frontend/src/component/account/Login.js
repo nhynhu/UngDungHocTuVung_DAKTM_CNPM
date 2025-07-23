@@ -145,6 +145,17 @@ const Login = () => {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
 
+            <div className="text-end mt-2">
+              <button
+                type="button"
+                className="btn btn-link p-0"
+                style={{ fontSize: '0.95rem' }}
+                onClick={() => navigate('/forgot-password')}
+              >
+                Forgot password?
+              </button>
+            </div>
+
             <div className="auth-footer">
               <p>
                 Don't have an account?{' '}

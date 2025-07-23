@@ -173,15 +173,18 @@ exports.login = async (req, res) => {
 
 exports.verifyEmail = async (req, res) => {
     const { token } = req.body;
+    console.log('🔑 Token nhận được:', token);
+    console.log('🔑 JWT_SECRET đang dùng:', process.env.JWT_SECRET);
+
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const email = decoded.email;
-        // Cập nhật user isVerified qua user-service
         await axios.put(process.env.USER_SERVICE_URL + `/users/email/${encodeURIComponent(email)}/verify`, {
             isVerified: true
         });
         res.json({ message: 'Email verified successfully!' });
     } catch (error) {
+        console.error('❌ Lỗi verify:', error.message);
         res.status(400).json({ message: 'Invalid or expired token.' });
     }
 };
@@ -193,4 +196,43 @@ exports.healthCheck = (req, res) => {
         timestamp: new Date().toISOString(),
         version: '1.0.0'
     });
+};
+
+exports.forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+
+    const userRes = await axios.get(`${process.env.USER_SERVICE_URL}/users/email/${encodeURIComponent(email)}`);
+    const user = userRes.data;
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+
+    await axios.post(`${process.env.MAIL_SERVICE_URL}/mail/send-password-reset`, {
+        to: email,
+        username: user.fullname,
+        resetLink
+    });
+
+    res.json({ message: 'Password reset email sent. Please check your inbox.' });
+};
+
+exports.resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) return res.status(400).json({ message: 'Missing token or new password' });
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const email = decoded.email;
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+        await axios.put(`${process.env.USER_SERVICE_URL}/users/email/${encodeURIComponent(email)}/reset-password`, {
+            password: hashedPassword
+        });
+
+        res.json({ message: 'Password reset successful!' });
+    } catch (err) {
+        res.status(400).json({ message: 'Invalid or expired token.' });
+    }
 };

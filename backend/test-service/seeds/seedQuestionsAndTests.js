@@ -230,7 +230,6 @@ const seedQuestionsAndTests = async () => {
         for (const config of testConfigs) {
             console.log(`\n🏗️ Creating test: ${config.name}`);
 
-            // Tạo test
             const test = await Test.create({
                 name: config.name,
                 description: config.description,
@@ -240,7 +239,6 @@ const seedQuestionsAndTests = async () => {
             console.log(`✅ Created test: ${config.name} (ID: ${test.id})`);
             totalTests++;
 
-            // Tạo 10 câu hỏi (5 từ mỗi topic)
             const topic1Data = topicWordsData[config.topic1];
             const topic2Data = topicWordsData[config.topic2];
 
@@ -249,15 +247,14 @@ const seedQuestionsAndTests = async () => {
                 continue;
             }
 
-            // 5 câu từ topic 1
             console.log(`   📝 Creating questions from ${topic1Data.name} (Topic ${config.topic1})...`);
             for (let i = 0; i < 5; i++) {
                 const word = topic1Data.words[i];
 
-                // Tạo wrong options realistic
+
                 const wrongOptions = generateWrongOptions(word.vietnamese, config.topic1, word.english);
 
-                // Tạo 4 options và shuffle
+
                 const allOptions = [word.vietnamese, ...wrongOptions];
                 const shuffledOptions = shuffleArray(allOptions);
                 const correctIndex = shuffledOptions.indexOf(word.vietnamese);
@@ -274,15 +271,12 @@ const seedQuestionsAndTests = async () => {
                 console.log(`         Options: ${shuffledOptions.join(', ')}`);
             }
 
-            // 5 câu từ topic 2
             console.log(`   📝 Creating questions from ${topic2Data.name} (Topic ${config.topic2})...`);
             for (let i = 0; i < 5; i++) {
                 const word = topic2Data.words[i];
 
-                // Tạo wrong options realistic
                 const wrongOptions = generateWrongOptions(word.vietnamese, config.topic2, word.english);
 
-                // Tạo 4 options và shuffle
                 const allOptions = [word.vietnamese, ...wrongOptions];
                 const shuffledOptions = shuffleArray(allOptions);
                 const correctIndex = shuffledOptions.indexOf(word.vietnamese);

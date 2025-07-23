@@ -60,6 +60,9 @@ const ApiService = {
     // Auth
     login: (credentials) => makeRequest('/auth/login', 'POST', credentials),
     register: (userData) => makeRequest('/auth/register', 'POST', userData),
+    forgotPassword: (data) => makeRequest('/auth/forgot-password', 'POST', data),
+    verifyEmail: (data) => makeRequest('/auth/verify', 'POST', data),
+    resetPassword: (data) => makeRequest('/auth/reset-password', 'POST', data),
 
     // Topics
     getAllTopics: () => makeRequest('/topics'),

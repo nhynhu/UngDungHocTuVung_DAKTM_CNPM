@@ -51,50 +51,30 @@ exports.sendVerificationEmail = async (req, res) => {
     }
 };
 
-/**
- * Send password reset email with template
- */
+
 exports.sendPasswordResetEmail = async (req, res) => {
-    const { to, username, resetLink, expireTime } = req.body;
-
-    try {
-        if (!to || !username || !resetLink) {
-            return res.status(400).json({
-                error: 'Missing required fields: to, username, resetLink'
-            });
-        }
-
-        const subject = `Reset Your Password - ${process.env.APP_NAME || 'English Learning App'}`;
-        const html = getEmailTemplate('passwordReset', {
-            username,
-            resetLink,
-            expireTime: expireTime || '1 hour',
-            appName: process.env.APP_NAME || 'English Learning App'
-        });
-
-        const mailOptions = {
-            from: {
-                name: process.env.APP_NAME || 'English Learning App',
-                address: process.env.EMAIL
-            },
-            to,
-            subject,
-            html
-        };
-
-        const result = await transporter.sendMail(mailOptions);
-
-        res.json({
-            message: 'Password reset email sent successfully',
-            messageId: result.messageId
-        });
-    } catch (error) {
-        console.error('Send password reset email error:', error);
-        res.status(500).json({
-            error: 'Failed to send password reset email',
-            details: error.message
-        });
+    const { to, username, resetLink } = req.body;
+    if (!to || !username || !resetLink) {
+        return res.status(400).json({ error: 'Missing required fields' });
     }
+
+    const subject = 'Reset Your Password';
+    const html = getEmailTemplate('passwordReset', {
+        username,
+        resetLink,
+        expireTime: '15 minutes',
+        appName: process.env.APP_NAME || 'English Learning App'
+    });
+
+    const mailOptions = {
+        from: { name: process.env.APP_NAME, address: process.env.EMAIL },
+        to,
+        subject,
+        html
+    };
+
+    const result = await transporter.sendMail(mailOptions);
+    res.json({ message: 'Password reset email sent' });
 };
 
 /**
