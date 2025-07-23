@@ -84,10 +84,6 @@ const Header = () => {
                                 </NavDropdown>
                             ) : (
                                 <>
-                                    <NavDropdown title="Setting" id="navbarScrollingDropdown">
-                                        <NavDropdown.Divider />
-                                        <NavDropdown.Item href="#action5">Log out</NavDropdown.Item>
-                                    </NavDropdown>
                                     <Button className='btn-login' onClick={handleLoginClick}>Log in</Button>
                                     <Button className='btn-signup' onClick={handleSignupClick}>Sign up</Button>
                                 </>
